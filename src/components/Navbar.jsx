@@ -60,18 +60,18 @@ export default function Navbar({ onOpenEmergency, onOpenAria }) {
         width: '100%',
         zIndex: 100,
         transition: 'all 0.3s ease',
-        background: scrolled ? 'rgba(3, 7, 18, 0.92)' : 'rgba(10, 16, 31, 0.65)',
+        background: scrolled ? 'rgba(3, 7, 18, 0.94)' : 'rgba(10, 16, 31, 0.75)',
         backdropFilter: 'blur(16px)',
         borderBottom: '1px solid rgba(0, 243, 255, 0.2)'
       }}
     >
-      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '72px', maxWidth: '1400px' }}>
+      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '68px', maxWidth: '1440px', padding: '0 1rem' }}>
         
         {/* Brand / Logo */}
-        <a href="#hero" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', textDecoration: 'none', color: '#ffffff', flexShrink: 0 }}>
+        <a href="#hero" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: '#ffffff', flexShrink: 0 }}>
           <div style={{
-            width: '38px',
-            height: '38px',
+            width: '36px',
+            height: '36px',
             borderRadius: '8px',
             background: 'linear-gradient(135deg, rgba(0,243,255,0.3), rgba(191,0,255,0.3))',
             border: '1px solid var(--color-neon-cyan)',
@@ -81,28 +81,40 @@ export default function Navbar({ onOpenEmergency, onOpenAria }) {
             color: 'var(--color-neon-cyan)',
             boxShadow: '0 0 15px rgba(0,243,255,0.2)'
           }}>
-            <Cpu size={22} />
+            <Cpu size={20} />
           </div>
-          <div>
-            <span style={{ fontSize: '1.15rem', fontWeight: 'bold', letterSpacing: '0.04em' }}>SMART CITY</span>
-            <span className="hud-font glow-text-cyan" style={{ fontSize: '0.8rem', marginLeft: '0.35rem', padding: '0.1rem 0.35rem', border: '1px solid rgba(0,243,255,0.4)', borderRadius: '4px' }}>2030</span>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <span style={{ fontSize: '1.05rem', fontWeight: 'bold', letterSpacing: '0.03em', whiteSpace: 'nowrap' }}>SMART CITY</span>
+            <span className="hud-font glow-text-cyan" style={{ fontSize: '0.75rem', marginLeft: '0.3rem', padding: '0.08rem 0.3rem', border: '1px solid rgba(0,243,255,0.4)', borderRadius: '4px' }}>2030</span>
           </div>
         </a>
 
         {/* Live Clock & System Status Indicator */}
-        <div className="hud-font nav-clock-status" style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.8rem', flexShrink: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--color-neon-green)' }}>
+        <div className="hud-font nav-clock-status" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.75rem', flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: 'var(--color-neon-green)' }}>
             <span className="pulse-dot" />
-            <span className="hud-badge" style={{ fontSize: '0.7rem', padding: '0.2rem 0.55rem' }}>ONLINE</span>
+            <span className="hud-badge" style={{ fontSize: '0.65rem', padding: '0.15rem 0.45rem' }}>ONLINE</span>
           </div>
-          <div style={{ color: 'var(--color-text-muted)', borderLeft: '1px solid rgba(255,255,255,0.12)', paddingLeft: '0.85rem' }}>
+          <div style={{ color: 'var(--color-text-muted)', borderLeft: '1px solid rgba(255,255,255,0.12)', paddingLeft: '0.65rem' }}>
             <span style={{ color: 'var(--color-neon-cyan)' }}>UTC: </span>
             <span>{currentTime || '12:00:47'}</span>
           </div>
         </div>
 
         {/* Desktop Navigation Links with Line Icons */}
-        <nav style={{ display: 'none', gap: '0.9rem', alignItems: 'center' }} className="desktop-nav">
+        <nav
+          className="desktop-nav"
+          style={{
+            display: 'none',
+            gap: '0.35rem',
+            alignItems: 'center',
+            overflowX: 'auto',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            maxWidth: '100%',
+            padding: '0 0.25rem'
+          }}
+        >
           {navLinks.map((link) => {
             const IconComponent = link.icon;
             return (
@@ -113,17 +125,17 @@ export default function Navbar({ onOpenEmergency, onOpenAria }) {
                 style={{
                   color: 'var(--color-text-muted)',
                   textDecoration: 'none',
-                  fontSize: '0.88rem',
+                  fontSize: '0.8rem',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.45rem',
-                  padding: '0.35rem 0.5rem',
+                  gap: '0.35rem',
+                  padding: '0.3rem 0.45rem',
                   borderRadius: '6px',
-                  transition: 'all 0.25s ease',
+                  transition: 'all 0.2s ease',
                   whiteSpace: 'nowrap'
                 }}
               >
-                <IconComponent size={17} style={{ color: 'var(--color-neon-cyan)', transition: 'transform 0.2s ease' }} className="nav-icon" />
+                <IconComponent size={15} style={{ color: 'var(--color-neon-cyan)', transition: 'transform 0.2s ease', flexShrink: 0 }} className="nav-icon" />
                 <span>{link.name}</span>
               </a>
             );
@@ -131,24 +143,25 @@ export default function Navbar({ onOpenEmergency, onOpenAria }) {
         </nav>
 
         {/* Action Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexShrink: 0 }}>
           <button
             onClick={onOpenEmergency}
             style={{
               background: 'rgba(255, 51, 102, 0.15)',
               border: '1px solid var(--color-neon-red)',
               color: 'var(--color-neon-red)',
-              padding: '0.45rem 0.85rem',
+              padding: '0.4rem 0.75rem',
               borderRadius: '6px',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.45rem',
-              fontSize: '0.82rem',
+              gap: '0.35rem',
+              fontSize: '0.78rem',
               fontWeight: 'bold',
               fontFamily: 'var(--font-primary)',
               transition: 'all 0.25s ease',
-              boxShadow: '0 0 12px rgba(255, 51, 102, 0.2)'
+              boxShadow: '0 0 12px rgba(255, 51, 102, 0.2)',
+              whiteSpace: 'nowrap'
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = 'rgba(255, 51, 102, 0.3)';
@@ -159,7 +172,7 @@ export default function Navbar({ onOpenEmergency, onOpenAria }) {
               e.currentTarget.style.boxShadow = '0 0 12px rgba(255, 51, 102, 0.2)';
             }}
           >
-            <Siren size={17} style={{ color: 'var(--color-neon-red)' }} />
+            <Siren size={15} style={{ color: 'var(--color-neon-red)' }} />
             <span>SOS ALERT</span>
           </button>
 
@@ -170,7 +183,7 @@ export default function Navbar({ onOpenEmergency, onOpenAria }) {
               background: 'transparent',
               border: '1px solid rgba(0, 243, 255, 0.4)',
               color: 'var(--color-neon-cyan)',
-              padding: '0.4rem',
+              padding: '0.35rem',
               borderRadius: '6px',
               cursor: 'pointer',
               display: 'flex',
@@ -179,7 +192,7 @@ export default function Navbar({ onOpenEmergency, onOpenAria }) {
             }}
             className="mobile-hamburger-btn"
           >
-            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>
@@ -190,7 +203,7 @@ export default function Navbar({ onOpenEmergency, onOpenAria }) {
           className="glass-panel"
           style={{
             position: 'absolute',
-            top: '72px',
+            top: '68px',
             left: 0,
             width: '100%',
             background: 'rgba(3, 7, 18, 0.97)',
@@ -243,20 +256,26 @@ export default function Navbar({ onOpenEmergency, onOpenAria }) {
       )}
 
       <style>{`
+        .desktop-nav::-webkit-scrollbar {
+          display: none;
+        }
         .nav-item-link:hover {
           color: #ffffff !important;
-          background: rgba(0, 243, 255, 0.1) !important;
+          background: rgba(0, 243, 255, 0.12) !important;
           text-shadow: 0 0 10px rgba(0, 243, 255, 0.6);
         }
         .nav-item-link:hover .nav-icon {
           transform: scale(1.15);
           filter: drop-shadow(0 0 6px var(--color-neon-cyan));
         }
-        @media (min-width: 1200px) {
+        @media (min-width: 1024px) {
           .desktop-nav { display: flex !important; }
           .mobile-hamburger-btn { display: none !important; }
         }
-        @media (max-width: 1199px) {
+        @media (max-width: 1380px) {
+          .nav-clock-status { display: none !important; }
+        }
+        @media (max-width: 1023px) {
           .nav-clock-status { display: none !important; }
           .desktop-nav { display: none !important; }
           .mobile-hamburger-btn { display: flex !important; }

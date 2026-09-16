@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, Navigation, Wind, Zap, Droplets, Clock, Activity } from 'lucide-react';
 
-export default function Hero({ onExplore, onOpenDashboard }) {
+export default function Hero({ onExplore, onOpenDashboard, onSelectMetric }) {
   const liveStats = [
-    { label: 'TRAFFIC FLOW', value: 82, suffix: '%', icon: Navigation, color: 'var(--color-neon-cyan)' },
-    { label: 'AIR QUALITY', value: 94, suffix: '%', icon: Wind, color: 'var(--color-neon-green)' },
-    { label: 'RENEWABLE ENERGY', value: 71, suffix: '%', icon: Zap, color: 'var(--color-neon-amber)' },
-    { label: 'WATER EFFICIENCY', value: 88, suffix: '%', icon: Droplets, color: 'var(--color-neon-cyan)' },
-    { label: 'EMERGENCY RESPONSE', value: 2.4, suffix: ' MIN', icon: Clock, color: 'var(--color-neon-red)' }
+    { id: 'traffic', label: 'TRAFFIC FLOW', value: 82, suffix: '%', icon: Navigation, color: 'var(--color-neon-cyan)', status: 'OPTIMAL', desc: 'AI computer vision adaptive signal timing across 450 municipal intersections.' },
+    { id: 'air', label: 'AIR QUALITY', value: 94, suffix: '%', icon: Wind, color: 'var(--color-neon-green)', status: 'HEALTHY (AQI 42)', desc: 'Micro-AQI sensors and vertical bio-forest scrubbers actively filtering particulate matter.' },
+    { id: 'energy', label: 'RENEWABLE ENERGY', value: 71, suffix: '%', icon: Zap, color: 'var(--color-neon-amber)', status: 'HIGH YIELD', desc: 'Solar building facade glass, micro-wind turbines, and offshore wave energy matrix.' },
+    { id: 'water', label: 'WATER EFFICIENCY', value: 88, suffix: '%', icon: Droplets, color: 'var(--color-neon-cyan)', status: 'EFFICIENT', desc: 'Acoustic pipeline leak detection and dynamic hydrostatic pressure optimization.' },
+    { id: 'emergency', label: 'EMERGENCY RESPONSE', value: 2.4, suffix: ' MIN', icon: Clock, color: 'var(--color-neon-red)', status: 'STANDBY', desc: 'Autonomous drone dispatch matrix and priority traffic corridor preemption.' }
   ];
 
   // Animated counters logic
@@ -85,7 +85,7 @@ export default function Hero({ onExplore, onOpenDashboard }) {
         <div style={{ position: 'relative' }}>
           <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
             <span className="hud-badge" style={{ fontSize: '0.7rem', padding: '0.2rem 0.6rem' }}>
-              SIMULATED DEMO DATA
+              SIMULATED DEMO DATA — CLICK METRIC FOR FULL TELEMETRY
             </span>
           </div>
 
@@ -93,7 +93,12 @@ export default function Hero({ onExplore, onOpenDashboard }) {
             {liveStats.map((stat, idx) => {
               const IconComponent = stat.icon;
               return (
-                <div key={stat.label} className="glass-card" style={{ textAlign: 'center', position: 'relative' }}>
+                <div
+                  key={stat.label}
+                  className="glass-card"
+                  onClick={() => onSelectMetric && onSelectMetric(stat)}
+                  style={{ textAlign: 'center', position: 'relative', cursor: 'pointer' }}
+                >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
                     <span className="hud-font" style={{ fontSize: '0.7rem', color: 'var(--color-text-muted)', letterSpacing: '0.05em' }}>
                       {stat.label}

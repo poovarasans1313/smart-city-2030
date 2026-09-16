@@ -1,7 +1,7 @@
 import React from 'react';
 import { CarFront, Zap, Leaf, ShieldCheck, Building2, Users, ArrowRight } from 'lucide-react';
 
-export default function SolutionsSection({ onTriggerToast }) {
+export default function SolutionsSection({ onTriggerToast, onSelectSolution }) {
   const solutions = [
     {
       id: 'mobility',
@@ -54,7 +54,9 @@ export default function SolutionsSection({ onTriggerToast }) {
   ];
 
   const handleCardClick = (sol) => {
-    if (onTriggerToast) {
+    if (onSelectSolution) {
+      onSelectSolution(sol);
+    } else if (onTriggerToast) {
       onTriggerToast(`Inspecting Solution: ${sol.title} (${sol.stats})`);
     }
   };
@@ -91,8 +93,11 @@ export default function SolutionsSection({ onTriggerToast }) {
                   display: 'flex',
                   flexDirection: 'column',
                   justify: 'space-between',
-                  position: 'relative'
+                  position: 'relative',
+                  transition: 'transform 0.2s ease'
                 }}
+                onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-4px)')}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
               >
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>

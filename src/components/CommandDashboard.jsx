@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { COMMAND_METRICS } from '../data/cityData';
 import { RefreshCw, CheckCircle2, Sliders, AlertCircle, Bell, ShieldAlert, Check, Eye, Play } from 'lucide-react';
 
-export default function CommandDashboard({ sosAlerts, onUpdateSosStatus, onTriggerToast }) {
+export default function CommandDashboard({ sosAlerts, onUpdateSosStatus, onTriggerToast, onSelectMetric }) {
   const [metrics, setMetrics] = useState(COMMAND_METRICS);
   const [refreshing, setRefreshing] = useState(false);
   const [activeFilter, setActiveFilter] = useState('ALL');
@@ -81,7 +81,7 @@ export default function CommandDashboard({ sosAlerts, onUpdateSosStatus, onTrigg
                       borderLeft: `4px solid ${color}`,
                       display: 'flex',
                       flexDirection: 'column',
-                      justify: 'space-between',
+                      justifyContent: 'space-between',
                       background: 'rgba(15, 23, 42, 0.85)'
                     }}
                   >
@@ -217,14 +217,21 @@ export default function CommandDashboard({ sosAlerts, onUpdateSosStatus, onTrigg
           </button>
         </div>
 
-        {/* Metric Cards Grid */}
+        {/* Metric Cards Grid — CLICKABLE FOR DETAILED MODAL */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.75rem' }}>
           {filteredMetrics.map((m) => (
-            <div key={m.id} className="glass-panel" style={{ padding: '1.75rem', position: 'relative' }}>
+            <div
+              key={m.id}
+              className="glass-panel"
+              onClick={() => onSelectMetric && onSelectMetric(m)}
+              style={{ padding: '1.75rem', position: 'relative', cursor: 'pointer', transition: 'transform 0.2s ease' }}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-4px)')}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
+            >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
                 <div>
                   <span className="hud-font" style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', letterSpacing: '0.08em' }}>
-                    METRIC // {m.id.toUpperCase()}
+                    METRIC // {m.id.toUpperCase()} (CLICK TO INSPECT)
                   </span>
                   <h3 style={{ fontSize: '1.4rem', fontWeight: 'bold', color: 'var(--color-text-main)', marginTop: '0.2rem' }}>
                     {m.title}

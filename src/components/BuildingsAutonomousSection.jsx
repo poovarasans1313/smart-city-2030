@@ -2,9 +2,9 @@ import React from 'react';
 import { SMART_BUILDINGS, AUTONOMOUS_STATS } from '../data/cityData';
 import { Building2, Bot, ShieldCheck, Cpu, Plane, Car, Check } from 'lucide-react';
 
-export default function BuildingsAutonomousSection() {
+export default function BuildingsAutonomousSection({ onSelectSubsystem }) {
   return (
-    <section className="section-padding grid-bg-overlay" style={{ position: 'relative' }}>
+    <section id="buildings" className="section-padding grid-bg-overlay" style={{ position: 'relative' }}>
       <div className="container">
         
         {/* SMART BUILDINGS SUB-SECTION */}
@@ -24,7 +24,14 @@ export default function BuildingsAutonomousSection() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.75rem' }}>
             {SMART_BUILDINGS.map((bldg) => (
-              <div key={bldg.name} className="glass-panel" style={{ padding: '1.75rem' }}>
+              <div
+                key={bldg.name}
+                className="glass-panel"
+                onClick={() => onSelectSubsystem && onSelectSubsystem({ title: bldg.name, desc: `Zero-Carbon Building Telemetry: Energy Efficiency ${bldg.energy}%, Water Efficiency ${bldg.water}%, Occupancy ${bldg.occupancy}%, CO2 Reduction ${bldg.co2}%. Systems: ${bldg.systems.join(', ')}.` })}
+                style={{ padding: '1.75rem', cursor: 'pointer', transition: 'transform 0.2s ease' }}
+                onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-4px)')}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
+              >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
                   <h3 className="hud-font glow-text-cyan" style={{ fontSize: '1.3rem', fontWeight: 'bold' }}>
                     {bldg.name}
@@ -97,7 +104,11 @@ export default function BuildingsAutonomousSection() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.75rem' }}>
-            <div className="glass-panel" style={{ padding: '2rem', textAlign: 'center' }}>
+            <div
+              className="glass-panel"
+              onClick={() => onSelectSubsystem && onSelectSubsystem({ title: 'AERIAL DRONE MATRIX', desc: '142 Active delivery & optical security inspection drones operating on autonomous corridors.' })}
+              style={{ padding: '2rem', textAlign: 'center', cursor: 'pointer' }}
+            >
               <Plane size={36} className="glow-text-cyan" style={{ marginBottom: '1rem' }} />
               <div className="hud-font glow-text-cyan" style={{ fontSize: '3rem', fontWeight: 'bold' }}>
                 {AUTONOMOUS_STATS.dronesOnline}
@@ -107,7 +118,11 @@ export default function BuildingsAutonomousSection() {
               </div>
             </div>
 
-            <div className="glass-panel" style={{ padding: '2rem', textAlign: 'center' }}>
+            <div
+              className="glass-panel"
+              onClick={() => onSelectSubsystem && onSelectSubsystem({ title: 'AUTONOMOUS TRANSIT FLEET', desc: '86 Level 5 autonomous electric buses and citizen shuttles operating with 0 driver intervention.' })}
+              style={{ padding: '2rem', textAlign: 'center', cursor: 'pointer' }}
+            >
               <Car size={36} className="glow-text-green" style={{ marginBottom: '1rem' }} />
               <div className="hud-font glow-text-green" style={{ fontSize: '3rem', fontWeight: 'bold' }}>
                 {AUTONOMOUS_STATS.autonomousVehicles}
@@ -117,7 +132,11 @@ export default function BuildingsAutonomousSection() {
               </div>
             </div>
 
-            <div className="glass-panel" style={{ padding: '2rem', textAlign: 'center' }}>
+            <div
+              className="glass-panel"
+              onClick={() => onSelectSubsystem && onSelectSubsystem({ title: 'ROBOTIC MAINTENANCE UNITS', desc: '54 Autonomous vacuum street cleaners, water pipeline repair bots, and solar glass scrubbing units.' })}
+              style={{ padding: '2rem', textAlign: 'center', cursor: 'pointer' }}
+            >
               <Bot size={36} className="glow-text-purple" style={{ marginBottom: '1rem' }} />
               <div className="hud-font glow-text-purple" style={{ fontSize: '3rem', fontWeight: 'bold' }}>
                 {AUTONOMOUS_STATS.robotSystems}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { X, CheckCircle2, ShieldAlert, AlertTriangle, Send, PhoneCall, AlertOctagon } from 'lucide-react';
+import { X, CheckCircle2, ShieldAlert, AlertTriangle, Send, PhoneCall, AlertOctagon, Bot, Activity, Layers, Info } from 'lucide-react';
 
 export default function ModalsAndToasts({
   activeMarker,
@@ -13,6 +13,13 @@ export default function ModalsAndToasts({
   onCloseReportModal,
   selectedTech,
   onCloseTech,
+  selectedMetric,
+  onCloseMetric,
+  selectedSolution,
+  onCloseSolution,
+  selectedSubsystem,
+  onCloseSubsystem,
+  onOpenAria,
   toasts,
   onDismissToast,
   onTriggerToast
@@ -26,11 +33,14 @@ export default function ModalsAndToasts({
         if (createdSosResult) onCloseSosResult();
         if (reportModalOpen) onCloseReportModal();
         if (selectedTech) onCloseTech();
+        if (selectedMetric) onCloseMetric();
+        if (selectedSolution) onCloseSolution();
+        if (selectedSubsystem) onCloseSubsystem();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeMarker, emergencyOpen, createdSosResult, reportModalOpen, selectedTech]);
+  }, [activeMarker, emergencyOpen, createdSosResult, reportModalOpen, selectedTech, selectedMetric, selectedSolution, selectedSubsystem]);
 
   // Form State for Citizen Issue Report Modal
   const [issueCategory, setIssueCategory] = useState('Pothole / Road Repair');
@@ -54,7 +64,7 @@ export default function ModalsAndToasts({
 
   return (
     <>
-      {/* MAP MARKER DETAIL MODAL */}
+      {/* 1. MAP MARKER DETAIL MODAL */}
       {activeMarker && (
         <div className="modal-backdrop" style={backdropStyle}>
           <div className="glass-panel" style={modalContainerStyle}>
@@ -104,7 +114,186 @@ export default function ModalsAndToasts({
         </div>
       )}
 
-      {/* 🚨 SOS CONFIRMATION MODAL (Prevents Accidental Triggers) */}
+      {/* 2. DASHBOARD METRIC DETAIL INSPECTION MODAL */}
+      {selectedMetric && (
+        <div className="modal-backdrop" style={backdropStyle}>
+          <div className="glass-panel" style={modalContainerStyle}>
+            <div style={modalHeaderStyle}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Activity size={20} style={{ color: selectedMetric.color || 'var(--color-neon-cyan)' }} />
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--color-text-main)' }}>
+                  {selectedMetric.label || selectedMetric.title} TELEMETRY
+                </h3>
+              </div>
+              <button onClick={onCloseMetric} style={closeBtnStyle}><X size={20} /></button>
+            </div>
+
+            <div style={{ padding: '1.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', padding: '1rem', background: 'rgba(15,23,42,0.8)', borderRadius: '8px', border: `1px solid ${selectedMetric.color || 'var(--color-neon-cyan)'}` }}>
+                <div>
+                  <div className="hud-font" style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>CURRENT OPERATIONAL SCORE</div>
+                  <div className="hud-font glow-text-cyan" style={{ fontSize: '2.4rem', fontWeight: 'bold' }}>
+                    {selectedMetric.score !== undefined ? selectedMetric.score : selectedMetric.value}
+                    <span style={{ fontSize: '1.1rem', marginLeft: '0.2rem' }}>{selectedMetric.unit || selectedMetric.suffix || '%'}</span>
+                  </div>
+                </div>
+                <span className="hud-badge" style={{ borderColor: selectedMetric.color || 'var(--color-neon-green)', color: selectedMetric.color || 'var(--color-neon-green)' }}>
+                  ● {selectedMetric.status || 'OPTIMAL'}
+                </span>
+              </div>
+
+              <div className="hud-font glow-text-cyan" style={{ fontSize: '0.78rem', marginBottom: '0.75rem' }}>
+                SIMULATED ZONE TELEMETRY BREAKDOWN:
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.65rem', marginBottom: '1.25rem' }}>
+                <div className="glass-card" style={{ padding: '0.6rem', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--color-text-muted)' }}>ZONE 01</div>
+                  <div style={{ fontWeight: 'bold', color: 'var(--color-neon-cyan)', fontSize: '0.95rem' }}>OPTIMAL</div>
+                </div>
+                <div className="glass-card" style={{ padding: '0.6rem', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--color-text-muted)' }}>ZONE 02</div>
+                  <div style={{ fontWeight: 'bold', color: 'var(--color-neon-green)', fontSize: '0.95rem' }}>STABLE</div>
+                </div>
+                <div className="glass-card" style={{ padding: '0.6rem', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--color-text-muted)' }}>ZONE 03</div>
+                  <div style={{ fontWeight: 'bold', color: 'var(--color-neon-cyan)', fontSize: '0.95rem' }}>BALANCED</div>
+                </div>
+                <div className="glass-card" style={{ padding: '0.6rem', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--color-text-muted)' }}>ZONE 04</div>
+                  <div style={{ fontWeight: 'bold', color: 'var(--color-neon-amber)', fontSize: '0.95rem' }}>MONITORING</div>
+                </div>
+              </div>
+
+              <div className="glass-card" style={{ padding: '0.85rem', marginBottom: '1rem', border: '1px solid var(--color-neon-cyan)', background: 'rgba(0,243,255,0.06)' }}>
+                <div className="hud-font glow-text-cyan" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>AI OPTIMIZATION RECOMMENDATION:</div>
+                <div style={{ fontSize: '0.88rem', color: 'var(--color-text-main)', marginTop: '0.3rem', lineHeight: 1.5 }}>
+                  "{selectedMetric.desc || selectedMetric.aiRec || 'Continuous telemetry streams indicate optimal performance across municipal sectors.'}"
+                </div>
+              </div>
+
+              <div style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)', marginBottom: '1.25rem', textAlign: 'center' }}>
+                ℹ DATA SOURCE: Simulated Smart City 2030 Competition Telemetry Matrix
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <button onClick={onCloseMetric} className="btn-secondary" style={{ flex: 1, justifyContent: 'center' }}>
+                  <span>CLOSE</span>
+                </button>
+                {onOpenAria && (
+                  <button
+                    onClick={() => {
+                      onCloseMetric();
+                      onOpenAria();
+                    }}
+                    className="btn-primary"
+                    style={{ flex: 1.2, justifyContent: 'center' }}
+                  >
+                    <Bot size={16} />
+                    <span>QUERY AI ASSISTANT</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 3. SOLUTION MODULE DETAIL MODAL */}
+      {selectedSolution && (
+        <div className="modal-backdrop" style={backdropStyle}>
+          <div className="glass-panel" style={modalContainerStyle}>
+            <div style={modalHeaderStyle}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Layers size={20} style={{ color: selectedSolution.color || 'var(--color-neon-cyan)' }} />
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--color-text-main)' }}>
+                  {selectedSolution.title} SUBSYSTEM
+                </h3>
+              </div>
+              <button onClick={onCloseSolution} style={closeBtnStyle}><X size={20} /></button>
+            </div>
+
+            <div style={{ padding: '1.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <span className="hud-badge" style={{ borderColor: selectedSolution.color, color: selectedSolution.color }}>
+                  ● {selectedSolution.stats}
+                </span>
+                <span className="hud-font" style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>
+                  RELIABILITY: 99.98%
+                </span>
+              </div>
+
+              <p style={{ fontSize: '0.98rem', color: 'var(--color-text-main)', lineHeight: 1.6, marginBottom: '1.25rem' }}>
+                {selectedSolution.desc}
+              </p>
+
+              <div className="hud-font glow-text-cyan" style={{ fontSize: '0.78rem', marginBottom: '0.75rem' }}>
+                KEY MODULE ARCHITECTURE HIGHLIGHTS:
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.25rem' }}>
+                <div style={{ padding: '0.55rem 0.75rem', background: 'rgba(15,23,42,0.7)', borderRadius: '6px', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <CheckCircle2 size={16} style={{ color: selectedSolution.color }} />
+                  <span>Real-Time Neural Telemetry Integration</span>
+                </div>
+                <div style={{ padding: '0.55rem 0.75rem', background: 'rgba(15,23,42,0.7)', borderRadius: '6px', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <CheckCircle2 size={16} style={{ color: selectedSolution.color }} />
+                  <span>Automated Municipal Incident Rerouting</span>
+                </div>
+                <div style={{ padding: '0.55rem 0.75rem', background: 'rgba(15,23,42,0.7)', borderRadius: '6px', fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <CheckCircle2 size={16} style={{ color: selectedSolution.color }} />
+                  <span>Sub-second Edge Computing Relay</span>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <button onClick={onCloseSolution} className="btn-secondary" style={{ flex: 1, justifyContent: 'center' }}>
+                  <span>CLOSE MODULE</span>
+                </button>
+                {onOpenAria && (
+                  <button
+                    onClick={() => {
+                      onCloseSolution();
+                      onOpenAria();
+                    }}
+                    className="btn-primary"
+                    style={{ flex: 1.2, justifyContent: 'center' }}
+                  >
+                    <Bot size={16} />
+                    <span>ASK AI ABOUT THIS</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. SUBSYSTEM & FEATURE MODAL */}
+      {selectedSubsystem && (
+        <div className="modal-backdrop" style={backdropStyle}>
+          <div className="glass-panel" style={modalContainerStyle}>
+            <div style={modalHeaderStyle}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Info size={20} className="glow-text-cyan" />
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--color-text-main)' }}>
+                  {selectedSubsystem.title || selectedSubsystem.name}
+                </h3>
+              </div>
+              <button onClick={onCloseSubsystem} style={closeBtnStyle}><X size={20} /></button>
+            </div>
+
+            <div style={{ padding: '1.5rem' }}>
+              <p style={{ fontSize: '0.98rem', color: 'var(--color-text-main)', lineHeight: 1.6, marginBottom: '1.25rem' }}>
+                {selectedSubsystem.desc || selectedSubsystem.details}
+              </p>
+              <button onClick={onCloseSubsystem} className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+                <span>CLOSE DETAILS</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 5. 🚨 SOS CONFIRMATION MODAL (Prevents Accidental Triggers) */}
       {emergencyOpen && (
         <div className="modal-backdrop" style={backdropStyle}>
           <div className="glass-panel" style={{ ...modalContainerStyle, border: '1px solid var(--color-neon-red)' }}>
@@ -176,7 +365,7 @@ export default function ModalsAndToasts({
         </div>
       )}
 
-      {/* SOS ALERT CREATED RESULT MODAL */}
+      {/* 6. SOS ALERT CREATED RESULT MODAL */}
       {createdSosResult && (
         <div className="modal-backdrop" style={backdropStyle}>
           <div className="glass-panel" style={{ ...modalContainerStyle, border: '1px solid var(--color-neon-cyan)' }}>
@@ -232,7 +421,7 @@ export default function ModalsAndToasts({
         </div>
       )}
 
-      {/* CITIZEN REPORT AN ISSUE MODAL */}
+      {/* 7. CITIZEN REPORT AN ISSUE MODAL */}
       {reportModalOpen && (
         <div className="modal-backdrop" style={backdropStyle}>
           <div className="glass-panel" style={modalContainerStyle}>
@@ -299,7 +488,7 @@ export default function ModalsAndToasts({
         </div>
       )}
 
-      {/* TECH SPECS MODAL */}
+      {/* 8. TECH SPECS MODAL */}
       {selectedTech && (
         <div className="modal-backdrop" style={backdropStyle}>
           <div className="glass-panel" style={modalContainerStyle}>

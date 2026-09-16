@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Bot, X, Send, RefreshCw, Search, Eye, Play, CheckCircle } from 'lucide-react';
+import { Bot, X, Send, RefreshCw, Search, Eye, Play, CheckCircle, AlertTriangle } from 'lucide-react';
 
 export default function AriaAssistant({ isOpen, onClose, onOpenReportModal, onTriggerToast, sosAlerts, liveMetrics }) {
   const [messages, setMessages] = useState([
@@ -13,15 +13,15 @@ export default function AriaAssistant({ isOpen, onClose, onOpenReportModal, onTr
   const chatBottomRef = useRef(null);
 
   const suggestedQuestions = [
-    'Give me the current city status.',
-    'What is the latest emergency?',
     'What is Smart City 2030?',
+    'How does the Command Center work?',
+    'How does AI improve traffic?',
     'How does the SOS system work?',
-    'What does the Command Center monitor?',
-    'How does AI help traffic management?',
-    'How does Smart City 2030 support sustainability?',
-    'What technologies are used?',
-    'What is happening in Zone 04?'
+    'What is the current city status?',
+    'What is the latest emergency?',
+    'How does this project support sustainability?',
+    'What is happening in Zone 04?',
+    'What is IoT?'
   ];
 
   useEffect(() => {
@@ -47,34 +47,35 @@ export default function AriaAssistant({ isOpen, onClose, onOpenReportModal, onTr
     const q = queryStr.toLowerCase();
 
     // 1. Live City Status Query
-    if (q.includes('current city status') || q.includes('city status summary') || q.includes('status summary')) {
+    if (q.includes('current city status') || q.includes('city status summary') || q.includes('status summary') || q.includes('city status')) {
       const activeSosCount = alerts ? alerts.filter(a => a.status !== 'RESOLVED').length : 0;
       return {
-        text: `CITY STATUS SUMMARY\n\nTraffic Flow: 82%\nAir Quality: 94%\nRenewable Energy: 71%\nWater Efficiency: 88%\nEmergency Response: 2.4 MIN\n\nActive SOS Alerts: ${activeSosCount} Critical Alert(s)\nOverall Status: The demo city is operational with live telemetry monitoring active across 12 urban sectors.`,
-        dataSource: 'Smart City 2030 Live Application State'
+        text: `CITY STATUS SUMMARY\n\nTraffic Flow: 82%\nAir Quality: 94%\nRenewable Energy: 71%\nWater Efficiency: 88%\nEmergency Response: 2.4 MIN\n\nActive SOS Alerts: ${activeSosCount} Critical Alert(s)\nOverall: The demo city is operational with live telemetry active across 12 sectors.`,
+        note: 'These values represent simulated Smart City 2030 demo data.',
+        dataSource: 'Smart City 2030 Shared State'
       };
     }
 
-    // 2. Latest Emergency Query
-    if (q.includes('latest emergency') || q.includes('latest sos') || q.includes('emergency alert')) {
+    // 2. Latest Emergency / Active Emergency Query
+    if (q.includes('latest emergency') || q.includes('latest sos') || q.includes('emergency alert') || q.includes('active emergency') || q.includes('is there any emergency')) {
       const latestAlert = alerts && alerts.length > 0 ? alerts[0] : null;
       if (latestAlert) {
         return {
-          text: `LATEST EMERGENCY ALERT:\n\nAlert ID: ${latestAlert.id}\nZone: ${latestAlert.zone}\nType: ${latestAlert.type}\nPriority: ${latestAlert.priority}\nStatus: ${latestAlert.status}\nTime: ${latestAlert.time}`,
-          recommendation: 'City operators should review the alert in Command Center and dispatch emergency response drones.',
-          dataSource: 'Live SOS Application State'
+          text: `ACTIVE EMERGENCY ALERT:\n\nAlert ID: ${latestAlert.id}\nZone: ${latestAlert.zone}\nType: ${latestAlert.type}\nPriority: ${latestAlert.priority}\nStatus: ${latestAlert.status}\nTime: ${latestAlert.time}`,
+          recommendation: 'City operators should review the alert in the City Command Center and dispatch emergency response procedures.',
+          dataSource: 'Live SOS Shared Application State'
         };
       } else {
         return {
           text: 'NO ACTIVE EMERGENCY ALERTS: All 12 urban sectors report nominal operation with 0 active SOS dispatches.',
           recommendation: 'To test emergency procedures, click the 🚨 SOS button in the header.',
-          dataSource: 'Live SOS Telemetry Engine'
+          dataSource: 'Live SOS Shared Application State'
         };
       }
     }
 
-    // 3. What is Smart City 2030?
-    if (q.includes('what is smart city 2030')) {
+    // 3. What is Smart City 2030? / What is this website?
+    if (q.includes('what is smart city 2030') || q.includes('what is this website') || q.includes('project objective')) {
       return {
         text: 'SMART CITY 2030 OVERVIEW\n\nObjective: An AI-powered urban platform connecting mobility, energy, environment, safety, and citizen services to create smarter and more sustainable connected cities.\n\nVision: Achieving net-zero carbon operations, Level 5 autonomous public transit, and sub-millisecond emergency dispatch by 2030.',
         dataSource: 'Smart City 2030 Project Vision Docs'
@@ -82,47 +83,49 @@ export default function AriaAssistant({ isOpen, onClose, onOpenReportModal, onTr
     }
 
     // 4. How does the SOS system work?
-    if (q.includes('sos system') || q.includes('how does sos work')) {
+    if (q.includes('sos system') || q.includes('how does sos work') || q.includes('sos workflow')) {
       return {
         text: 'SOS EMERGENCY SYSTEM WORKFLOW:\n\n1. Citizen Clicks 🚨 SOS in header\n2. Confirmation Modal verifies request to prevent accidental clicks\n3. System creates unique Alert ID (e.g. SOS-2030-0042) logged to Zone 04\n4. Serverless API transmits SMS alert to Admin Mobile\n5. City Command Center activates 🔴 ACTIVE EMERGENCY PANEL with interactive dispatch controls.',
         dataSource: 'Smart City 2030 System Architecture'
       };
     }
 
-    // 5. What does the Command Center monitor?
-    if (q.includes('command center monitor') || q.includes('command center')) {
+    // 5. How does the Command Center work / What does it monitor?
+    if (q.includes('command center') || q.includes('monitoring')) {
       return {
-        text: 'COMMAND CENTER MONITORING CAPABILITIES:\n\n- Traffic Flow & Autonomous Signal Timing\n- Solar & Wind Energy Grid Health\n- Hyper-local Air Quality (AQI)\n- Hydrostatic Water Pressure & Leak Telemetry\n- Zero-Trust Quantum Cybersecurity Logs',
-        dataSource: 'Smart City 2030 Operations Specs'
+        text: 'CITY COMMAND CENTER OPERATIONAL MATRIX:\n\nMonitors: Traffic Flow, Solar/Wind Grid Yield, Air Quality Index (AQI), Hydrostatic Water Pressure, and Real-Time SOS Alerts.\n\nOperators can inspect sector telemetry, trigger re-syncs, and acknowledge/resolve emergency dispatches.',
+        dataSource: 'Smart City Command Specs'
       };
     }
 
     // 6. How does AI help traffic management?
-    if (q.includes('traffic management') || q.includes('ai help traffic')) {
+    if (q.includes('traffic management') || q.includes('ai help traffic') || q.includes('ai improve traffic') || q.includes('traffic')) {
       return {
-        text: 'AI TRAFFIC OPTIMIZATION:\n\nOptical computer vision cameras measure vehicular flow across 450 intersections. Neural algorithms dynamically adjust green light duration (+18 sec during peak congestion) and reroute Level 5 autonomous shuttles.',
+        text: 'AI TRAFFIC OPTIMIZATION:\n\nOptical computer vision cameras measure vehicular flow across 450 intersections. Neural algorithms dynamically adjust green light duration (+18 sec during peak congestion) and reroute autonomous transit shuttles.',
+        note: 'Current simulated Traffic Flow metric: 82%.',
         dataSource: 'Smart City Mobility Model'
       };
     }
 
     // 7. How does Smart City 2030 support sustainability?
-    if (q.includes('sustainability') || q.includes('sustainable')) {
+    if (q.includes('sustainability') || q.includes('sustainable') || q.includes('environment') || q.includes('green energy')) {
       return {
-        text: 'SUSTAINABILITY ARCHITECTURE:\n\n- 71% Renewable Power Ratio (Solar facade glass + offshore wind turbines)\n- 0.6 GW Battery Reserve Bank for zero-carbon peak power\n- Vertical bio-forest air scrubbers maintaining AQI 94%\n- Automated rain harvesting and sub-surface leak prevention.',
+        text: 'SUSTAINABILITY ARCHITECTURE:\n\n- 71% Renewable Power Share (Solar glass + micro-wind turbines)\n- 0.6 GW Battery Storage for zero-carbon peak load\n- Vertical bio-forest air scrubbers maintaining Air Quality 94%\n- Automated rain harvesting and sub-surface leak prevention.',
+        note: 'These metric scores are simulated project demo data.',
         dataSource: 'Smart City Environment Telemetry'
       };
     }
 
     // 8. What technologies are used?
-    if (q.includes('technologies') || q.includes('tech stack')) {
+    if (q.includes('technologies') || q.includes('tech stack') || q.includes('architecture')) {
       return {
         text: 'CORE TECHNOLOGY STACK:\n\n- Frontend: React 18, Vite 5, CSS3 Glassmorphism\n- Intelligence: AI/ML Neural Models, Computer Vision, Edge Computing\n- Telemetry: 12.8K NB-IoT & 6G Sensor Matrix\n- Serverless: Vercel Node.js Serverless Functions for SMS Alerts',
         dataSource: 'Smart City Tech Architecture'
       };
     }
 
-    // 9. Zone 04 Query
-    if (q.includes('zone 04')) {
+    // 9. What is happening in Zone 04?
+    if (q.includes('zone 04') || q.includes('zone 4')) {
       return {
         text: 'ZONE 04 STATUS SUMMARY:\n\nTraffic Density: HIGH (82% Flow Efficiency)\nAir Quality: GOOD (AQI 42)\nSmart Signals: ACTIVE (+18 sec extension)',
         analysis: 'High morning commuter density detected along Central Highway Corridor.',
@@ -131,7 +134,31 @@ export default function AriaAssistant({ isOpen, onClose, onOpenReportModal, onTr
       };
     }
 
-    // 10. Default Strict Accuracy Fallback
+    // 10. General Knowledge: What is IoT?
+    if (q.includes('iot') || q.includes('internet of things')) {
+      return {
+        text: 'INTERNET OF THINGS (IoT):\n\nA network of physical objects embedded with sensors, software, and connectivity to exchange data. In Smart City 2030, 12,800+ IoT sensors monitor air quality, water pressure, energy loads, and structural health.',
+        dataSource: 'Verified Smart City Knowledge Base'
+      };
+    }
+
+    // 11. General Knowledge: What is AI / Artificial Intelligence?
+    if (q.includes('what is ai') || q.includes('artificial intelligence')) {
+      return {
+        text: 'ARTIFICIAL INTELLIGENCE (AI):\n\nMachine intelligence algorithms that simulate human decision-making. Smart City 2030 uses neural networks for adaptive signal control, energy load balancing, computer vision hazard detection, and predictive maintenance.',
+        dataSource: 'Verified Smart City Knowledge Base'
+      };
+    }
+
+    // 12. General Knowledge: Digital Twins
+    if (q.includes('digital twin')) {
+      return {
+        text: 'DIGITAL TWIN ARCHITECTURE:\n\nA real-time virtual 3D replica of physical urban infrastructure. Allows city engineers to simulate traffic rerouting, storm surge flooding, and power grid failures before deploying physical changes.',
+        dataSource: 'Verified Smart City Knowledge Base'
+      };
+    }
+
+    // 13. Default Strict Accuracy Fallback
     return {
       text: "I don't have verified information about that in the current Smart City 2030 system.",
       recommendation: "Please select one of the verified Smart City telemetry topics below.",
@@ -297,6 +324,12 @@ export default function AriaAssistant({ isOpen, onClose, onOpenReportModal, onTr
             >
               <div>{msg.text}</div>
 
+              {msg.note && (
+                <div style={{ marginTop: '0.4rem', fontSize: '0.75rem', color: 'var(--color-neon-amber)' }}>
+                  ℹ {msg.note}
+                </div>
+              )}
+
               {msg.analysis && (
                 <div style={{ marginTop: '0.5rem', fontSize: '0.82rem', color: 'var(--color-text-muted)' }}>
                   <strong style={{ color: 'var(--color-neon-amber)' }}>ANALYSIS:</strong> {msg.analysis}
@@ -307,7 +340,7 @@ export default function AriaAssistant({ isOpen, onClose, onOpenReportModal, onTr
                 <div style={{ marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', fontSize: '0.82rem' }}>
                   <strong style={{ color: 'var(--color-neon-cyan)' }}>RECOMMENDATION:</strong> {msg.recommendation}
 
-                  {/* 3 Interactive Action Buttons */}
+                  {/* Interactive Action Buttons */}
                   <div style={{ display: 'flex', gap: '0.3rem', marginTop: '0.5rem' }}>
                     <button
                       onClick={() => handleInsightAction('ANALYZE', msg)}

@@ -50,6 +50,9 @@ export default function App() {
   const [emergencyOpen, setEmergencyOpen] = useState(false);
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const [selectedTech, setSelectedTech] = useState(null);
+  const [selectedMetric, setSelectedMetric] = useState(null);
+  const [selectedSolution, setSelectedSolution] = useState(null);
+  const [selectedSubsystem, setSelectedSubsystem] = useState(null);
   const [ariaOpen, setAriaOpen] = useState(false);
 
   // Toast Notification State
@@ -148,13 +151,15 @@ export default function App() {
         <Hero
           onExplore={() => triggerToast("Navigated to Smart City Solutions...")}
           onOpenDashboard={() => triggerToast("Navigated to City Command Center Dashboard...")}
+          onSelectMetric={(m) => setSelectedMetric(m)}
         />
 
-        {/* 2. City Command Center (Main Centerpiece Dashboard with 🚨 ACTIVE EMERGENCY ALERTS Panel) */}
+        {/* 2. City Command Center Dashboard */}
         <CommandDashboard
           sosAlerts={sosAlerts}
           onUpdateSosStatus={handleUpdateSosStatus}
           onTriggerToast={triggerToast}
+          onSelectMetric={(m) => setSelectedMetric(m)}
         />
 
         {/* 3. Interactive City Map & Digital Twin Mirror */}
@@ -166,7 +171,10 @@ export default function App() {
         <CityBrain onTriggerToast={triggerToast} />
 
         {/* 5. Smart City Solutions (6 Modular Cards) */}
-        <SolutionsSection onTriggerToast={triggerToast} />
+        <SolutionsSection
+          onTriggerToast={triggerToast}
+          onSelectSolution={(sol) => setSelectedSolution(sol)}
+        />
 
         {/* 6. How It Works (Technical Architecture Flow) */}
         <HowItWorksSection />
@@ -175,13 +183,18 @@ export default function App() {
         <VisionImpactSection />
 
         {/* 8. Infrastructure, Public Safety & Security Subsystems */}
-        <BuildingsAutonomousSection />
+        <BuildingsAutonomousSection
+          onSelectSubsystem={(sub) => setSelectedSubsystem(sub)}
+        />
 
         <PublicSafetyHealthcareSection
           onOpenEmergencyModal={() => setEmergencyOpen(true)}
+          onSelectSubsystem={(sub) => setSelectedSubsystem(sub)}
         />
 
-        <AgricultureCybersecuritySection />
+        <AgricultureCybersecuritySection
+          onSelectSubsystem={(sub) => setSelectedSubsystem(sub)}
+        />
 
         <TechShowcase onSelectTech={(tech) => setSelectedTech(tech)} />
 
@@ -211,6 +224,13 @@ export default function App() {
         onCloseReportModal={() => setReportModalOpen(false)}
         selectedTech={selectedTech}
         onCloseTech={() => setSelectedTech(null)}
+        selectedMetric={selectedMetric}
+        onCloseMetric={() => setSelectedMetric(null)}
+        selectedSolution={selectedSolution}
+        onCloseSolution={() => setSelectedSolution(null)}
+        selectedSubsystem={selectedSubsystem}
+        onCloseSubsystem={() => setSelectedSubsystem(null)}
+        onOpenAria={() => setAriaOpen(true)}
         toasts={toasts}
         onDismissToast={dismissToast}
         onTriggerToast={triggerToast}

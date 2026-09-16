@@ -12,10 +12,12 @@ import {
   ShieldCheck,
   Building2,
   Rocket,
-  Siren
+  Siren,
+  Sun,
+  Moon
 } from 'lucide-react';
 
-export default function Navbar({ onOpenEmergency, onOpenAria }) {
+export default function Navbar({ onOpenEmergency, onOpenAria, theme, onToggleTheme }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState('');
   const [scrolled, setScrolled] = useState(false);
@@ -60,7 +62,7 @@ export default function Navbar({ onOpenEmergency, onOpenAria }) {
         width: '100%',
         zIndex: 100,
         transition: 'all 0.3s ease',
-        background: scrolled ? 'rgba(3, 7, 18, 0.94)' : 'rgba(10, 16, 31, 0.75)',
+        background: scrolled ? (theme === 'light' ? 'rgba(255, 255, 255, 0.94)' : 'rgba(3, 7, 18, 0.94)') : (theme === 'light' ? 'rgba(241, 245, 249, 0.85)' : 'rgba(10, 16, 31, 0.75)'),
         backdropFilter: 'blur(16px)',
         borderBottom: '1px solid rgba(0, 243, 255, 0.2)'
       }}
@@ -68,7 +70,7 @@ export default function Navbar({ onOpenEmergency, onOpenAria }) {
       <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '68px', maxWidth: '1440px', padding: '0 1rem' }}>
         
         {/* Brand / Logo */}
-        <a href="#hero" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: '#ffffff', flexShrink: 0 }}>
+        <a href="#hero" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: 'var(--color-text-main)', flexShrink: 0 }}>
           <div style={{
             width: '36px',
             height: '36px',
@@ -142,8 +144,34 @@ export default function Navbar({ onOpenEmergency, onOpenAria }) {
           })}
         </nav>
 
-        {/* Action Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexShrink: 0 }}>
+        {/* Action Buttons: Theme Switcher + SOS Alert */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+          
+          {/* Dark / Light Theme Toggle Switch */}
+          <button
+            onClick={onToggleTheme}
+            title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Theme`}
+            style={{
+              background: 'rgba(0, 243, 255, 0.1)',
+              border: '1px solid rgba(0, 243, 255, 0.3)',
+              color: 'var(--color-neon-cyan)',
+              padding: '0.35rem 0.6rem',
+              borderRadius: '20px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              fontSize: '0.75rem',
+              fontFamily: 'var(--font-hud)',
+              fontWeight: 'bold',
+              transition: 'all 0.25s ease'
+            }}
+          >
+            {theme === 'dark' ? <Sun size={15} style={{ color: '#ffaa00' }} /> : <Moon size={15} style={{ color: '#7c3aed' }} />}
+            <span>{theme === 'dark' ? 'LIGHT' : 'DARK'}</span>
+          </button>
+
+          {/* SOS Alert Button */}
           <button
             onClick={onOpenEmergency}
             style={{
@@ -206,7 +234,7 @@ export default function Navbar({ onOpenEmergency, onOpenAria }) {
             top: '68px',
             left: 0,
             width: '100%',
-            background: 'rgba(3, 7, 18, 0.97)',
+            background: theme === 'light' ? 'rgba(255, 255, 255, 0.98)' : 'rgba(3, 7, 18, 0.97)',
             backdropFilter: 'blur(20px)',
             borderBottom: '1px solid var(--color-neon-cyan)',
             padding: '1.25rem 1.5rem',
@@ -260,7 +288,7 @@ export default function Navbar({ onOpenEmergency, onOpenAria }) {
           display: none;
         }
         .nav-item-link:hover {
-          color: #ffffff !important;
+          color: var(--color-text-main) !important;
           background: rgba(0, 243, 255, 0.12) !important;
           text-shadow: 0 0 10px rgba(0, 243, 255, 0.6);
         }

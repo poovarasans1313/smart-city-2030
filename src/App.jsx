@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import BackgroundVideo from './components/BackgroundVideo';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -6,14 +6,12 @@ import CommandDashboard from './components/CommandDashboard';
 import CityBrain from './components/CityBrain';
 import DigitalTwin from './components/DigitalTwin';
 import InteractiveMap from './components/InteractiveMap';
-import TransportationSection from './components/TransportationSection';
-import EnergyGridSection from './components/EnergyGridSection';
-import EnvironmentSection from './components/EnvironmentSection';
-import WaterWasteSection from './components/WaterWasteSection';
+import SolutionsSection from './components/SolutionsSection';
+import HowItWorksSection from './components/HowItWorksSection';
+import VisionImpactSection from './components/VisionImpactSection';
 import BuildingsAutonomousSection from './components/BuildingsAutonomousSection';
 import PublicSafetyHealthcareSection from './components/PublicSafetyHealthcareSection';
 import AgricultureCybersecuritySection from './components/AgricultureCybersecuritySection';
-import CitizenServices from './components/CitizenServices';
 import TechShowcase from './components/TechShowcase';
 import Roadmap2030 from './components/Roadmap2030';
 import AriaAssistant from './components/AriaAssistant';
@@ -21,6 +19,17 @@ import ModalsAndToasts from './components/ModalsAndToasts';
 import Footer from './components/Footer';
 
 export default function App() {
+  // Theme State (Dark / Light Theme)
+  const [theme, setTheme] = useState('dark');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
   // Modal States
   const [activeMarker, setActiveMarker] = useState(null);
   const [emergencyOpen, setEmergencyOpen] = useState(false);
@@ -30,7 +39,7 @@ export default function App() {
 
   // Toast Notification State
   const [toasts, setToasts] = useState([
-    { id: 1, message: "Smart City 2030 Command Operating System initialized online." }
+    { id: 1, message: "Smart City 2030 Competition Platform initialized online." }
   ]);
 
   const triggerToast = (message) => {
@@ -46,7 +55,7 @@ export default function App() {
   };
 
   return (
-    <div className="smart-city-app" style={{ minHeight: '100vh', position: 'relative' }}>
+    <div className="smart-city-app" data-theme={theme} style={{ minHeight: '100vh', position: 'relative' }}>
       
       {/* Background Video & Cinematic Shader Overlay */}
       <BackgroundVideo />
@@ -55,31 +64,40 @@ export default function App() {
       <Navbar
         onOpenEmergency={() => setEmergencyOpen(true)}
         onOpenAria={() => setAriaOpen(true)}
+        theme={theme}
+        onToggleTheme={toggleTheme}
       />
 
-      {/* Main Content Sections */}
+      {/* Main Content Sections (Judge Presentation Order) */}
       <main style={{ position: 'relative', zIndex: 1 }}>
+        
+        {/* 1. Hero Section & Live City Status */}
         <Hero
-          onExplore={() => triggerToast("Exploring Digital Twin spatial simulation...")}
-          onOpenDashboard={() => triggerToast("Navigated to Real-Time Command Dashboard.")}
+          onExplore={() => triggerToast("Navigated to Smart City Solutions...")}
+          onOpenDashboard={() => triggerToast("Navigated to City Command Center Dashboard...")}
         />
 
+        {/* 2. City Command Center (Main Centerpiece Dashboard) */}
         <CommandDashboard onTriggerToast={triggerToast} />
 
-        <CityBrain onTriggerToast={triggerToast} />
-
+        {/* 3. Interactive City Map & Digital Twin Mirror */}
         <DigitalTwin onTriggerToast={triggerToast} />
 
         <InteractiveMap onSelectMarker={(marker) => setActiveMarker(marker)} />
 
-        <TransportationSection onTriggerToast={triggerToast} />
+        {/* 4. AI City Intelligence Engine */}
+        <CityBrain onTriggerToast={triggerToast} />
 
-        <EnergyGridSection />
+        {/* 5. Smart City Solutions (6 Modular Cards) */}
+        <SolutionsSection onTriggerToast={triggerToast} />
 
-        <EnvironmentSection />
+        {/* 6. How It Works (Technical Architecture Flow) */}
+        <HowItWorksSection />
 
-        <WaterWasteSection onTriggerToast={triggerToast} />
+        {/* 7. Vision 2030 Impact Targets */}
+        <VisionImpactSection />
 
+        {/* 8. Infrastructure, Public Safety & Security Subsystems */}
         <BuildingsAutonomousSection />
 
         <PublicSafetyHealthcareSection
@@ -88,13 +106,9 @@ export default function App() {
 
         <AgricultureCybersecuritySection />
 
-        <CitizenServices
-          onOpenReportModal={() => setReportModalOpen(true)}
-          onTriggerToast={triggerToast}
-        />
-
         <TechShowcase onSelectTech={(tech) => setSelectedTech(tech)} />
 
+        {/* 9. 2030 Strategic Roadmap */}
         <Roadmap2030 />
       </main>
 
@@ -103,6 +117,7 @@ export default function App() {
         isOpen={ariaOpen}
         onClose={() => setAriaOpen(!ariaOpen)}
         onOpenReportModal={() => setReportModalOpen(true)}
+        onTriggerToast={triggerToast}
       />
 
       {/* Global Modals & Toast Manager */}
@@ -121,7 +136,7 @@ export default function App() {
       />
 
       {/* Footer */}
-      <Footer onExplore={() => triggerToast("Welcome to Smart City 2030!")} />
+      <Footer onExplore={() => triggerToast("Welcome to Smart City 2030 Competition Platform!")} />
 
     </div>
   );

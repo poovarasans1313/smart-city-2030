@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { X, CheckCircle2, ShieldAlert, Cpu, AlertTriangle, Send } from 'lucide-react';
+import { X, CheckCircle2, ShieldAlert, AlertTriangle, Send, PhoneCall } from 'lucide-react';
 
 export default function ModalsAndToasts({
   activeMarker,
@@ -34,6 +34,9 @@ export default function ModalsAndToasts({
   const [issueDesc, setIssueDesc] = useState('');
   const [formError, setFormError] = useState('');
 
+  // SOS Emergency Admin Mobile SMS state
+  const [adminPhone, setAdminPhone] = useState('+1 (800) 938-2030');
+
   const handleReportSubmit = (e) => {
     e.preventDefault();
     if (!issueDesc.trim()) {
@@ -45,6 +48,13 @@ export default function ModalsAndToasts({
     setIssueDesc('');
     if (onTriggerToast) {
       onTriggerToast(`Issue report submitted successfully for ${issueLocation}. AI dispatch notified!`);
+    }
+  };
+
+  const handleSendAdminSms = () => {
+    onCloseEmergency();
+    if (onTriggerToast) {
+      onTriggerToast(`🚨 EMERGENCY SMS TRANSMITTED TO ADMIN MOBILE (${adminPhone}): SOS Alert in Zone 07!`);
     }
   };
 
@@ -66,7 +76,7 @@ export default function ModalsAndToasts({
                 <span className="hud-badge" style={{ borderColor: 'var(--color-neon-cyan)', color: 'var(--color-neon-cyan)' }}>
                   {activeMarker.type.toUpperCase()}
                 </span>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#ffffff' }}>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--color-text-main)' }}>
                   {activeMarker.title}
                 </h3>
               </div>
@@ -77,67 +87,106 @@ export default function ModalsAndToasts({
               <div className="hud-font glow-text-cyan" style={{ fontSize: '0.8rem', marginBottom: '1rem' }}>
                 NODE TELEMETRY & CAPACITIES:
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem', marginBottom: '1.25rem' }}>
                 {Object.entries(activeMarker.metrics).map(([key, val]) => (
                   <div key={key} className="glass-card" style={{ padding: '0.75rem' }}>
                     <div className="hud-font" style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', textTransform: 'uppercase' }}>
                       {key}
                     </div>
-                    <div className="hud-font glow-text-cyan" style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
+                    <div className="hud-font glow-text-cyan" style={{ fontSize: '1.15rem', fontWeight: 'bold' }}>
                       {val}
                     </div>
                   </div>
                 ))}
               </div>
+
+              {activeMarker.aiRec && (
+                <div className="glass-card" style={{ padding: '0.85rem', marginBottom: '1.25rem', border: '1px solid var(--color-neon-cyan)', background: 'rgba(0,243,255,0.06)' }}>
+                  <div className="hud-font glow-text-cyan" style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>SIMULATED AI RECOMMENDATION:</div>
+                  <div style={{ fontSize: '0.88rem', color: 'var(--color-text-main)', marginTop: '0.3rem' }}>
+                    "{activeMarker.aiRec}"
+                  </div>
+                </div>
+              )}
+
               <button onClick={onCloseMarker} className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
-                <span>CLOSE NODE INSPECTION</span>
+                <span>CLOSE INSPECTION</span>
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* EMERGENCY INCIDENT ALERT MODAL */}
+      {/* EMERGENCY INCIDENT & ADMIN SMS DISPATCH MODAL */}
       {emergencyOpen && (
         <div className="modal-backdrop" style={backdropStyle}>
           <div className="glass-panel" style={{ ...modalContainerStyle, border: '1px solid var(--color-neon-red)' }}>
             <div style={{ ...modalHeaderStyle, background: 'rgba(255,51,102,0.15)', borderBottom: '1px solid var(--color-neon-red)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <ShieldAlert size={24} style={{ color: 'var(--color-neon-red)' }} />
-                <h3 className="hud-font" style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--color-neon-red)' }}>
-                  ⚠ INCIDENT DETECTED // ZONE 07
+                <ShieldAlert size={22} style={{ color: 'var(--color-neon-red)' }} />
+                <h3 className="hud-font" style={{ fontSize: '1.15rem', fontWeight: 'bold', color: 'var(--color-neon-red)' }}>
+                  ⚠ SOS EMERGENCY // ADMIN MOBILE ALERT
                 </h3>
               </div>
               <button onClick={onCloseEmergency} style={closeBtnStyle}><X size={20} /></button>
             </div>
 
             <div style={{ padding: '1.5rem' }}>
-              <p style={{ fontSize: '1.05rem', color: '#ffffff', marginBottom: '1rem', lineHeight: 1.5 }}>
-                Traffic collision & minor thermal signature detected in Zone 07 intersection. Automated CCTV stream confirmed non-hazardous vehicle contact.
+              <p style={{ fontSize: '1rem', color: 'var(--color-text-main)', marginBottom: '1rem', lineHeight: 1.5 }}>
+                Trigger instant emergency dispatch or transmit a direct SMS alert broadcast to the City Operations Admin Mobile unit.
               </p>
 
-              <div className="glass-card" style={{ marginBottom: '1.5rem', border: '1px solid rgba(255,51,102,0.3)' }}>
-                <div className="hud-font" style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>RECOMMENDED DISPATCH:</div>
-                <div className="hud-font glow-text-cyan" style={{ fontSize: '0.95rem', fontWeight: 'bold', marginTop: '0.2rem' }}>
+              {/* Admin Mobile Phone Input */}
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label className="hud-font" style={{ display: 'block', fontSize: '0.78rem', color: 'var(--color-text-muted)', marginBottom: '0.4rem' }}>
+                  ADMIN MOBILE NUMBER FOR SMS DISPATCH:
+                </label>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <input
+                    type="text"
+                    value={adminPhone}
+                    onChange={(e) => setAdminPhone(e.target.value)}
+                    style={{ ...inputStyle, flex: 1 }}
+                  />
+                  <button
+                    onClick={handleSendAdminSms}
+                    className="btn-primary"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(255,51,102,0.3), rgba(191,0,255,0.3))',
+                      borderColor: 'var(--color-neon-red)',
+                      fontSize: '0.8rem',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    <PhoneCall size={14} />
+                    <span>SEND SMS →</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="glass-card" style={{ marginBottom: '1.25rem', border: '1px solid rgba(255,51,102,0.3)' }}>
+                <div className="hud-font" style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>RECOMMENDED DISPATCH PROTOCOL:</div>
+                <div className="hud-font glow-text-cyan" style={{ fontSize: '0.9rem', fontWeight: 'bold', marginTop: '0.2rem' }}>
                   2 Rapid Medical Drones + 1 Autonomous Traffic Rerouter
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '1rem' }}>
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
                 <button onClick={onCloseEmergency} className="btn-secondary" style={{ flex: 1, justifyContent: 'center' }}>
-                  <span>DISMISS ALARM</span>
+                  <span>DISMISS</span>
                 </button>
                 <button
                   onClick={handleDispatchEmergency}
                   className="btn-primary"
                   style={{
                     flex: 1,
-                    justify: 'center',
+                    justifyContent: 'center',
                     background: 'linear-gradient(135deg, rgba(255,51,102,0.4), rgba(191,0,255,0.4))',
-                    borderColor: 'var(--color-neon-red)'
+                    borderColor: 'var(--color-neon-red)',
+                    fontSize: '0.85rem'
                   }}
                 >
-                  <span>DISPATCH RESPONSE →</span>
+                  <span>DISPATCH DRONES →</span>
                 </button>
               </div>
             </div>
@@ -152,7 +201,7 @@ export default function ModalsAndToasts({
             <div style={modalHeaderStyle}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <AlertTriangle size={20} className="glow-text-cyan" />
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#ffffff' }}>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--color-text-main)' }}>
                   REPORT AN URBAN ISSUE
                 </h3>
               </div>
@@ -161,7 +210,7 @@ export default function ModalsAndToasts({
 
             <form onSubmit={handleReportSubmit} style={{ padding: '1.5rem' }}>
               <div style={{ marginBottom: '1rem' }}>
-                <label className="hud-font" style={{ display: 'block', fontSize: '0.8rem', color: 'var(--color-text-muted)', marginBottom: '0.4rem' }}>
+                <label className="hud-font" style={{ display: 'block', fontSize: '0.78rem', color: 'var(--color-text-muted)', marginBottom: '0.4rem' }}>
                   ISSUE CATEGORY
                 </label>
                 <select
@@ -178,7 +227,7 @@ export default function ModalsAndToasts({
               </div>
 
               <div style={{ marginBottom: '1rem' }}>
-                <label className="hud-font" style={{ display: 'block', fontSize: '0.8rem', color: 'var(--color-text-muted)', marginBottom: '0.4rem' }}>
+                <label className="hud-font" style={{ display: 'block', fontSize: '0.78rem', color: 'var(--color-text-muted)', marginBottom: '0.4rem' }}>
                   LOCATION
                 </label>
                 <input
@@ -190,7 +239,7 @@ export default function ModalsAndToasts({
               </div>
 
               <div style={{ marginBottom: '1.25rem' }}>
-                <label className="hud-font" style={{ display: 'block', fontSize: '0.8rem', color: 'var(--color-text-muted)', marginBottom: '0.4rem' }}>
+                <label className="hud-font" style={{ display: 'block', fontSize: '0.78rem', color: 'var(--color-text-muted)', marginBottom: '0.4rem' }}>
                   DESCRIPTION
                 </label>
                 <textarea
@@ -221,7 +270,7 @@ export default function ModalsAndToasts({
                 <span className="hud-font glow-text-cyan" style={{ fontSize: '0.75rem' }}>
                   SPECS // {selectedTech.category}
                 </span>
-                <h3 style={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#ffffff' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--color-text-main)' }}>
                   {selectedTech.name}
                 </h3>
               </div>
@@ -229,7 +278,7 @@ export default function ModalsAndToasts({
             </div>
 
             <div style={{ padding: '1.5rem' }}>
-              <p style={{ fontSize: '1.05rem', color: '#ffffff', marginBottom: '1.25rem', lineHeight: 1.6 }}>
+              <p style={{ fontSize: '1.02rem', color: 'var(--color-text-main)', marginBottom: '1.25rem', lineHeight: 1.6 }}>
                 {selectedTech.details}
               </p>
               <button onClick={onCloseTech} className="btn-secondary" style={{ width: '100%', justifyContent: 'center' }}>
@@ -260,7 +309,7 @@ export default function ModalsAndToasts({
             style={{
               padding: '0.85rem 1.25rem',
               border: '1px solid var(--color-neon-cyan)',
-              background: 'rgba(3, 7, 18, 0.95)',
+              background: 'var(--color-panel-bg)',
               boxShadow: '0 10px 30px rgba(0, 243, 255, 0.25)',
               display: 'flex',
               alignItems: 'center',
@@ -270,7 +319,7 @@ export default function ModalsAndToasts({
             }}
           >
             <CheckCircle2 size={18} className="glow-text-green" />
-            <span style={{ fontSize: '0.9rem', color: '#ffffff' }}>{toast.message}</span>
+            <span style={{ fontSize: '0.9rem', color: 'var(--color-text-main)' }}>{toast.message}</span>
             <button
               onClick={() => onDismissToast(toast.id)}
               style={{ background: 'transparent', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer', marginLeft: '0.5rem' }}
@@ -323,7 +372,7 @@ const backdropStyle = {
 const modalContainerStyle = {
   maxWidth: '520px',
   width: '100%',
-  background: 'rgba(10, 16, 31, 0.95)',
+  background: 'var(--color-panel-bg)',
   border: '1px solid var(--color-neon-cyan)',
   borderRadius: '12px',
   boxShadow: '0 20px 50px rgba(0,243,255,0.2)',
@@ -352,7 +401,7 @@ const inputStyle = {
   border: '1px solid rgba(0, 243, 255, 0.3)',
   borderRadius: '6px',
   padding: '0.65rem 0.85rem',
-  color: '#ffffff',
+  color: 'var(--color-text-main)',
   fontSize: '0.92rem',
   fontFamily: 'var(--font-primary)',
   outline: 'none'

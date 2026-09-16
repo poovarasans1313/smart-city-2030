@@ -1,25 +1,37 @@
 import React, { useState } from 'react';
 import { MAP_MARKERS } from '../data/cityData';
-import { MapPin, Navigation, Compass, Crosshair } from 'lucide-react';
+import { MapPin, Compass, Navigation, Zap, Droplets, Wind, Siren, Lightbulb } from 'lucide-react';
 
 export default function InteractiveMap({ onSelectMarker }) {
   const [activeFilter, setActiveFilter] = useState('ALL');
 
-  const categories = ['ALL', 'Hospital', 'Traffic', 'Energy', 'Water', 'Park', 'EV Charging', 'Smart Building', 'Emergency'];
+  const categories = ['ALL', 'Traffic', 'Energy', 'Water', 'Pollution', 'Smart Lighting', 'EV Charging', 'Emergency', 'Hospital'];
+
+  // Map markers extended dataset
+  const mapData = [
+    { id: 'zone-04', type: 'Traffic', title: 'ZONE 04 — CENTRAL CORRIDOR', lat: 45, lng: 35, status: 'HIGH DENSITY', metrics: { traffic: 'HIGH', airQuality: 'GOOD', smartSignals: 'ACTIVE' }, aiRec: 'Optimize signal timing during peak traffic (+18 sec green light).' },
+    { id: 'nrg-02', type: 'Energy', title: 'ZONE 02 — SOLAR HUB', lat: 25, lng: 65, status: 'GENERATING', metrics: { output: '1.4 GW', battery: '92%', gridSync: 'STABLE' }, aiRec: 'Shift non-critical loads to renewable storage peak hours.' },
+    { id: 'wtr-01', type: 'Water', title: 'ZONE 01 — RESERVOIR DELTA', lat: 70, lng: 50, status: 'HEALTHY', metrics: { level: '82%', purity: '98%', acousticCheck: 'CLEAR' }, aiRec: 'Schedule micro-flush maintenance at 02:00 UTC.' },
+    { id: 'pol-07', type: 'Pollution', title: 'ZONE 07 — INDUSTRIAL ECO-CENTER', lat: 60, lng: 75, status: 'MONITORING', metrics: { aqi: 42, co2Scrub: '94%', bioFiltration: 'ACTIVE' }, aiRec: 'Increase bio-filtration scrubber RPM to maintain optimal AQI.' },
+    { id: 'ev-05', type: 'EV Charging', title: 'ZONE 05 — HYPER-CHARGE PLAZA', lat: 35, lng: 20, status: 'ACTIVE', metrics: { availablePorts: 18, totalPorts: 24, load: '75%' }, aiRec: 'Reserve 4 charging ports for incoming autonomous transit shuttles.' },
+    { id: 'lgt-03', type: 'Smart Lighting', title: 'ZONE 03 — SMART LIGHTING GRID', lat: 55, lng: 60, status: 'EFFICIENT', metrics: { activeLamps: 1420, motionDimming: 'ACTIVE', energySaved: '32%' }, aiRec: 'Enable 40% ambient dimming during zero-pedestrian hours.' },
+    { id: 'emg-07', type: 'Emergency', title: 'ZONE 07 — DISASTER & FIRE NODE', lat: 30, lng: 80, status: 'READY', metrics: { responseDrones: 12, readyTime: '2.4 min', status: 'STANDBY' }, aiRec: 'Autonomous response drones prepped for rapid zone dispatch.' }
+  ];
 
   const filteredMarkers = activeFilter === 'ALL'
-    ? MAP_MARKERS
-    : MAP_MARKERS.filter((m) => m.type === activeFilter);
+    ? mapData
+    : mapData.filter((m) => m.type === activeFilter);
 
   const getMarkerColor = (type) => {
     switch (type) {
-      case 'Hospital': return '#ff3366';
-      case 'Traffic': return '#00ff9d';
-      case 'Energy': return '#ffaa00';
-      case 'Water': return '#00f3ff';
-      case 'EV Charging': return '#00f3ff';
-      case 'Emergency': return '#ff3366';
-      default: return '#bf00ff';
+      case 'Traffic': return 'var(--color-neon-amber)';
+      case 'Energy': return 'var(--color-neon-amber)';
+      case 'Water': return 'var(--color-neon-cyan)';
+      case 'Pollution': return 'var(--color-neon-green)';
+      case 'Smart Lighting': return 'var(--color-neon-cyan)';
+      case 'EV Charging': return 'var(--color-neon-purple)';
+      case 'Emergency': return 'var(--color-neon-red)';
+      default: return 'var(--color-neon-cyan)';
     }
   };
 
@@ -37,12 +49,12 @@ export default function InteractiveMap({ onSelectMarker }) {
             INTERACTIVE CITY <span className="glow-text-cyan">MAP</span>
           </h2>
           <p className="section-subtitle">
-            Locate critical municipal infrastructure, emergency response centers, EV hyper-chargers, and IoT monitoring stations across the smart grid.
+            Explore live city zones, traffic signals, EV charging plazas, solar nodes, smart lighting, emergency centers, and pollution monitors in real time.
           </p>
         </div>
 
         {/* Filter Bar */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center', marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', justifyContent: 'center', marginBottom: '2rem' }}>
           {categories.map((cat) => (
             <button
               key={cat}
@@ -54,7 +66,7 @@ export default function InteractiveMap({ onSelectMarker }) {
                 color: activeFilter === cat ? 'var(--color-neon-cyan)' : 'var(--color-text-muted)',
                 padding: '0.4rem 0.85rem',
                 borderRadius: '6px',
-                fontSize: '0.8rem',
+                fontSize: '0.78rem',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease'
               }}
@@ -68,7 +80,7 @@ export default function InteractiveMap({ onSelectMarker }) {
         <div
           className="glass-panel"
           style={{
-            height: '460px',
+            height: '480px',
             position: 'relative',
             borderRadius: '12px',
             overflow: 'hidden',
@@ -98,8 +110,8 @@ export default function InteractiveMap({ onSelectMarker }) {
               position: 'absolute',
               top: '50%',
               left: '50%',
-              width: '320px',
-              height: '320px',
+              width: '340px',
+              height: '340px',
               transform: 'translate(-50%, -50%)',
               border: '1px dashed rgba(0, 243, 255, 0.25)',
               borderRadius: '50%',
@@ -181,7 +193,7 @@ export default function InteractiveMap({ onSelectMarker }) {
             }}
           >
             <div className="hud-font" style={{ fontSize: '0.75rem', color: 'var(--color-neon-cyan)' }}>
-              ● CLICK ANY PIN TO VIEW NODE CAPACITY & AI MONITORING METRICS
+              ● CLICK ANY LOCATION PIN TO VIEW REAL-TIME ZONE TELEMETRY & AI RECOMMENDATIONS
             </div>
             <div className="hud-font" style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
               SECTOR GRID: 35.4° N, 139.6° E

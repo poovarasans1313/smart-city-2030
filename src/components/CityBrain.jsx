@@ -1,19 +1,31 @@
 import React, { useState } from 'react';
 import { AI_PREDICTIONS } from '../data/cityData';
-import { Cpu, ArrowDown, Sparkles, AlertCircle, CheckCircle2, Info, Play } from 'lucide-react';
+import { Cpu, AlertCircle, CheckCircle2, Info, Search, Eye, Play } from 'lucide-react';
 
 export default function CityBrain({ onTriggerToast }) {
   const [predictions, setPredictions] = useState(AI_PREDICTIONS);
-  const [executingId, setExecutingId] = useState(null);
+  const [activeActionId, setActiveActionId] = useState(null);
 
-  const handleExecuteAction = (pred) => {
-    setExecutingId(pred.id);
+  const handleAnalyze = (pred) => {
+    if (onTriggerToast) {
+      onTriggerToast(`AI Analyzing Sector Telemetry for Insight #${pred.id}...`);
+    }
+  };
+
+  const handleViewRecommendation = (pred) => {
+    if (onTriggerToast) {
+      onTriggerToast(`AI Recommendation for Insight #${pred.id}: "${pred.action}"`);
+    }
+  };
+
+  const handleTakeAction = (pred) => {
+    setActiveActionId(pred.id);
     setTimeout(() => {
-      setExecutingId(null);
+      setActiveActionId(null);
       if (onTriggerToast) {
-        onTriggerToast(`AI Decision executed: "${pred.action}"`);
+        onTriggerToast(`SIMULATED AI ACTION EXECUTED: Dispatched "${pred.action}"`);
       }
-    }, 800);
+    }, 700);
   };
 
   const getSeverityIcon = (severity) => {
@@ -25,11 +37,11 @@ export default function CityBrain({ onTriggerToast }) {
   };
 
   const flowSteps = [
-    { title: "CITY DATA", desc: "12.8K IoT Sensors & Streams" },
-    { title: "AI ANALYSIS", desc: "Neural Pattern Matching" },
+    { title: "IoT SENSORS", desc: "12.8K Active Nodes" },
+    { title: "CITY PLATFORM", desc: "Edge Processing Mesh" },
+    { title: "AI ANALYSIS", desc: "Neural Pattern Detection" },
     { title: "PREDICTION", desc: "Predictive Analytics Models" },
-    { title: "SMART DECISION", desc: "Optimized Action Selection" },
-    { title: "CITY ACTION", desc: "Autonomous Infrastructure Dispatch" }
+    { title: "SMART DECISION", desc: "Autonomous Optimization" }
   ];
 
   return (
@@ -40,23 +52,23 @@ export default function CityBrain({ onTriggerToast }) {
         <div className="section-header">
           <div className="hud-badge" style={{ borderColor: 'rgba(191,0,255,0.4)', color: 'var(--color-neon-purple)', marginBottom: '1rem' }}>
             <Cpu size={16} />
-            <span>ARTIFICIAL GENERAL INTELLIGENCE CORE</span>
+            <span>SIMULATED AI INSIGHT ENGINE</span>
           </div>
           <h2 className="section-title">
-            THE CITY HAS A <span className="glow-text-purple">BRAIN</span>.
+            AI CITY <span className="glow-text-purple">INTELLIGENCE</span>
           </h2>
           <p className="section-subtitle">
-            Millions of data points become meaningful decisions through artificial intelligence, driving autonomous optimization across every city sector.
+            Millions of municipal data points synthesized into actionable autonomous decisions through advanced artificial intelligence models.
           </p>
         </div>
 
         {/* Visual Workflow Pipeline */}
-        <div className="glass-panel" style={{ padding: '2.5rem', marginBottom: '3.5rem' }}>
-          <div className="hud-font" style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--color-neon-purple)', letterSpacing: '0.1em', marginBottom: '2rem' }}>
-            ◆ AUTONOMOUS DECISION-MAKING PIPELINE ◆
+        <div className="glass-panel" style={{ padding: '2.25rem', marginBottom: '3.5rem' }}>
+          <div className="hud-font" style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--color-neon-purple)', letterSpacing: '0.1em', marginBottom: '1.75rem' }}>
+            ◆ AUTONOMOUS DECISION PIPELINE ◆
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1.25rem', alignItems: 'center' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '1.25rem', alignItems: 'center' }}>
             {flowSteps.map((step, idx) => (
               <React.Fragment key={step.title}>
                 <div
@@ -68,13 +80,13 @@ export default function CityBrain({ onTriggerToast }) {
                     background: 'rgba(191,0,255,0.06)'
                   }}
                 >
-                  <span className="hud-font glow-text-cyan" style={{ fontSize: '0.75rem' }}>
-                    STEP 0{idx + 1}
+                  <span className="hud-font glow-text-cyan" style={{ fontSize: '0.72rem' }}>
+                    PHASE 0{idx + 1}
                   </span>
-                  <h4 className="hud-font" style={{ fontSize: '1rem', fontWeight: 'bold', color: '#ffffff', margin: '0.4rem 0' }}>
+                  <h4 className="hud-font" style={{ fontSize: '0.95rem', fontWeight: 'bold', color: 'var(--color-text-main)', margin: '0.3rem 0' }}>
                     {step.title}
                   </h4>
-                  <p style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)' }}>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
                     {step.desc}
                   </p>
                 </div>
@@ -88,7 +100,7 @@ export default function CityBrain({ onTriggerToast }) {
           </div>
         </div>
 
-        {/* Live AI Insights & Action Recommendations Feed */}
+        {/* Live AI Insights & Functional Action Buttons */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
           {predictions.map((pred) => (
             <div key={pred.id} className="glass-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
@@ -100,28 +112,50 @@ export default function CityBrain({ onTriggerToast }) {
                       INSIGHT #{pred.id}
                     </span>
                   </div>
-                  <span className="hud-badge" style={{ fontSize: '0.65rem', padding: '0.2rem 0.5rem' }}>
-                    AI PREDICTION
+                  <span className="hud-badge" style={{ fontSize: '0.65rem', padding: '0.15rem 0.45rem', borderColor: 'rgba(191,0,255,0.4)', color: 'var(--color-neon-purple)' }}>
+                    SIMULATED AI INSIGHT
                   </span>
                 </div>
-                <p style={{ fontSize: '1.05rem', color: '#ffffff', lineHeight: 1.5, marginBottom: '1rem' }}>
+                <p style={{ fontSize: '1.05rem', color: 'var(--color-text-main)', lineHeight: 1.5, marginBottom: '1rem' }}>
                   "{pred.text}"
                 </p>
               </div>
 
-              <div style={{ paddingTop: '0.75rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-                <div style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', marginBottom: '0.6rem' }}>
-                  <strong style={{ color: 'var(--color-neon-cyan)' }}>RECOMMENDED ACTION:</strong> {pred.action}
+              <div style={{ paddingTop: '0.85rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                <div style={{ fontSize: '0.82rem', color: 'var(--color-text-muted)', marginBottom: '0.85rem' }}>
+                  <strong style={{ color: 'var(--color-neon-cyan)' }}>RECOMMENDATION:</strong> {pred.action}
                 </div>
-                <button
-                  onClick={() => handleExecuteAction(pred)}
-                  disabled={executingId === pred.id}
-                  className="btn-primary"
-                  style={{ width: '100%', fontSize: '0.85rem', padding: '0.5rem 1rem', justifyContent: 'center' }}
-                >
-                  <Play size={14} />
-                  <span>{executingId === pred.id ? 'DISPATCHING...' : 'EXECUTE ACTION →'}</span>
-                </button>
+
+                {/* 3 Interactive Buttons: ANALYZE, VIEW RECOMMENDATION, TAKE ACTION */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.4rem' }}>
+                  <button
+                    onClick={() => handleAnalyze(pred)}
+                    className="btn-secondary"
+                    style={{ fontSize: '0.72rem', padding: '0.4rem 0.2rem', justifyContent: 'center', whiteSpace: 'nowrap' }}
+                  >
+                    <Search size={12} />
+                    <span>ANALYZE</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleViewRecommendation(pred)}
+                    className="btn-secondary"
+                    style={{ fontSize: '0.72rem', padding: '0.4rem 0.2rem', justifyContent: 'center', whiteSpace: 'nowrap' }}
+                  >
+                    <Eye size={12} />
+                    <span>REC.</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleTakeAction(pred)}
+                    disabled={activeActionId === pred.id}
+                    className="btn-primary"
+                    style={{ fontSize: '0.72rem', padding: '0.4rem 0.2rem', justifyContent: 'center', whiteSpace: 'nowrap' }}
+                  >
+                    <Play size={12} />
+                    <span>{activeActionId === pred.id ? 'EXECUTING...' : 'ACTION'}</span>
+                  </button>
+                </div>
               </div>
             </div>
           ))}

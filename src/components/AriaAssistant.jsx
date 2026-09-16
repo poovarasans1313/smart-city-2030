@@ -1,24 +1,27 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ARIA_RESPONSES } from '../data/cityData';
-import { Bot, X, Send, Sparkles, RefreshCw, Search, Eye, Play } from 'lucide-react';
+import { Bot, X, Send, RefreshCw, Search, Eye, Play, CheckCircle } from 'lucide-react';
 
-export default function AriaAssistant({ isOpen, onClose, onOpenReportModal, onTriggerToast }) {
+export default function AriaAssistant({ isOpen, onClose, onOpenReportModal, onTriggerToast, sosAlerts, liveMetrics }) {
   const [messages, setMessages] = useState([
     {
       sender: 'aria',
-      text: 'Welcome to AI CITY INTELLIGENCE. I am monitoring 12.8K urban IoT sensors. How can I assist your city operations query?'
+      text: 'Welcome to SMART CITY AI ASSISTANT. I am synchronized with live city telemetry and active SOS emergency streams. How can I assist your operations query?'
     }
   ]);
   const [inputQuery, setInputQuery] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const chatBottomRef = useRef(null);
 
-  const quickPrompts = [
-    'Why is traffic high?',
-    'Show energy demand status',
-    'Check air quality in Zone 07',
-    'Where are EV chargers?',
-    'Is there any emergency?'
+  const suggestedQuestions = [
+    'Give me the current city status.',
+    'What is the latest emergency?',
+    'What is Smart City 2030?',
+    'How does the SOS system work?',
+    'What does the Command Center monitor?',
+    'How does AI help traffic management?',
+    'How does Smart City 2030 support sustainability?',
+    'What technologies are used?',
+    'What is happening in Zone 04?'
   ];
 
   useEffect(() => {
@@ -34,40 +37,106 @@ export default function AriaAssistant({ isOpen, onClose, onOpenReportModal, onTr
     setIsTyping(true);
 
     setTimeout(() => {
-      let responseText = '';
-      let recommendation = '';
-
-      if (query.includes('traffic')) {
-        responseText = 'High congestion detected in Zone 04 Central Corridor. Traffic density is 18% above nominal threshold.';
-        recommendation = 'Increase green-light duration by 18 seconds during peak traffic.';
-      } else if (query.includes('energy')) {
-        responseText = 'Energy demand has increased by 12% in Zone 02 due to air conditioning load.';
-        recommendation = 'Shift non-critical loads toward renewable generation periods and release 0.4 GW battery reserve.';
-      } else if (query.includes('air') || query.includes('Zone 07')) {
-        responseText = 'Air quality deterioration detected near Zone 07 Industrial Sector (AQI 58).';
-        recommendation = 'Increase bio-filtration scrubber RPM by 25% and notify nearby citizens.';
-      } else if (query.includes('EV') || query.includes('charger')) {
-        responseText = '18 hyper-chargers available at Zone 05 Plaza with 100% solar micro-grid synchronization.';
-        recommendation = 'Reserve 4 inductive ports for incoming Level 5 autonomous shuttles.';
-      } else if (query.includes('emergency')) {
-        responseText = 'All 12 disaster response stations standby. Average medical drone arrival time is 2.4 minutes.';
-        recommendation = 'Keep rapid response drones on active standby.';
-      } else {
-        responseText = `Analyzing city telemetry for "${query}". All municipal subsystems operating within nominal 2030 safety parameters.`;
-        recommendation = 'Continuous telemetry streaming active.';
-      }
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: 'aria',
-          text: responseText,
-          recommendation,
-          isAiInsight: true
-        }
-      ]);
+      let responseObj = generateGroundedAiResponse(query, sosAlerts, liveMetrics);
+      setMessages((prev) => [...prev, { sender: 'aria', ...responseObj }]);
       setIsTyping(false);
-    }, 600);
+    }, 550);
+  };
+
+  const generateGroundedAiResponse = (queryStr, alerts, metrics) => {
+    const q = queryStr.toLowerCase();
+
+    // 1. Live City Status Query
+    if (q.includes('current city status') || q.includes('city status summary') || q.includes('status summary')) {
+      const activeSosCount = alerts ? alerts.filter(a => a.status !== 'RESOLVED').length : 0;
+      return {
+        text: `CITY STATUS SUMMARY\n\nTraffic Flow: 82%\nAir Quality: 94%\nRenewable Energy: 71%\nWater Efficiency: 88%\nEmergency Response: 2.4 MIN\n\nActive SOS Alerts: ${activeSosCount} Critical Alert(s)\nOverall Status: The demo city is operational with live telemetry monitoring active across 12 urban sectors.`,
+        dataSource: 'Smart City 2030 Live Application State'
+      };
+    }
+
+    // 2. Latest Emergency Query
+    if (q.includes('latest emergency') || q.includes('latest sos') || q.includes('emergency alert')) {
+      const latestAlert = alerts && alerts.length > 0 ? alerts[0] : null;
+      if (latestAlert) {
+        return {
+          text: `LATEST EMERGENCY ALERT:\n\nAlert ID: ${latestAlert.id}\nZone: ${latestAlert.zone}\nType: ${latestAlert.type}\nPriority: ${latestAlert.priority}\nStatus: ${latestAlert.status}\nTime: ${latestAlert.time}`,
+          recommendation: 'City operators should review the alert in Command Center and dispatch emergency response drones.',
+          dataSource: 'Live SOS Application State'
+        };
+      } else {
+        return {
+          text: 'NO ACTIVE EMERGENCY ALERTS: All 12 urban sectors report nominal operation with 0 active SOS dispatches.',
+          recommendation: 'To test emergency procedures, click the 🚨 SOS button in the header.',
+          dataSource: 'Live SOS Telemetry Engine'
+        };
+      }
+    }
+
+    // 3. What is Smart City 2030?
+    if (q.includes('what is smart city 2030')) {
+      return {
+        text: 'SMART CITY 2030 OVERVIEW\n\nObjective: An AI-powered urban platform connecting mobility, energy, environment, safety, and citizen services to create smarter and more sustainable connected cities.\n\nVision: Achieving net-zero carbon operations, Level 5 autonomous public transit, and sub-millisecond emergency dispatch by 2030.',
+        dataSource: 'Smart City 2030 Project Vision Docs'
+      };
+    }
+
+    // 4. How does the SOS system work?
+    if (q.includes('sos system') || q.includes('how does sos work')) {
+      return {
+        text: 'SOS EMERGENCY SYSTEM WORKFLOW:\n\n1. Citizen Clicks 🚨 SOS in header\n2. Confirmation Modal verifies request to prevent accidental clicks\n3. System creates unique Alert ID (e.g. SOS-2030-0042) logged to Zone 04\n4. Serverless API transmits SMS alert to Admin Mobile\n5. City Command Center activates 🔴 ACTIVE EMERGENCY PANEL with interactive dispatch controls.',
+        dataSource: 'Smart City 2030 System Architecture'
+      };
+    }
+
+    // 5. What does the Command Center monitor?
+    if (q.includes('command center monitor') || q.includes('command center')) {
+      return {
+        text: 'COMMAND CENTER MONITORING CAPABILITIES:\n\n- Traffic Flow & Autonomous Signal Timing\n- Solar & Wind Energy Grid Health\n- Hyper-local Air Quality (AQI)\n- Hydrostatic Water Pressure & Leak Telemetry\n- Zero-Trust Quantum Cybersecurity Logs',
+        dataSource: 'Smart City 2030 Operations Specs'
+      };
+    }
+
+    // 6. How does AI help traffic management?
+    if (q.includes('traffic management') || q.includes('ai help traffic')) {
+      return {
+        text: 'AI TRAFFIC OPTIMIZATION:\n\nOptical computer vision cameras measure vehicular flow across 450 intersections. Neural algorithms dynamically adjust green light duration (+18 sec during peak congestion) and reroute Level 5 autonomous shuttles.',
+        dataSource: 'Smart City Mobility Model'
+      };
+    }
+
+    // 7. How does Smart City 2030 support sustainability?
+    if (q.includes('sustainability') || q.includes('sustainable')) {
+      return {
+        text: 'SUSTAINABILITY ARCHITECTURE:\n\n- 71% Renewable Power Ratio (Solar facade glass + offshore wind turbines)\n- 0.6 GW Battery Reserve Bank for zero-carbon peak power\n- Vertical bio-forest air scrubbers maintaining AQI 94%\n- Automated rain harvesting and sub-surface leak prevention.',
+        dataSource: 'Smart City Environment Telemetry'
+      };
+    }
+
+    // 8. What technologies are used?
+    if (q.includes('technologies') || q.includes('tech stack')) {
+      return {
+        text: 'CORE TECHNOLOGY STACK:\n\n- Frontend: React 18, Vite 5, CSS3 Glassmorphism\n- Intelligence: AI/ML Neural Models, Computer Vision, Edge Computing\n- Telemetry: 12.8K NB-IoT & 6G Sensor Matrix\n- Serverless: Vercel Node.js Serverless Functions for SMS Alerts',
+        dataSource: 'Smart City Tech Architecture'
+      };
+    }
+
+    // 9. Zone 04 Query
+    if (q.includes('zone 04')) {
+      return {
+        text: 'ZONE 04 STATUS SUMMARY:\n\nTraffic Density: HIGH (82% Flow Efficiency)\nAir Quality: GOOD (AQI 42)\nSmart Signals: ACTIVE (+18 sec extension)',
+        analysis: 'High morning commuter density detected along Central Highway Corridor.',
+        recommendation: 'Optimize traffic signal timing and divert autonomous shuttles to Underpass Sector 03.',
+        dataSource: 'Smart City Demo Dashboard'
+      };
+    }
+
+    // 10. Default Strict Accuracy Fallback
+    return {
+      text: "I don't have verified information about that in the current Smart City 2030 system.",
+      recommendation: "Please select one of the verified Smart City telemetry topics below.",
+      dataSource: 'Smart City 2030 Knowledge Engine'
+    };
   };
 
   const handleInsightAction = (actionType, msg) => {
@@ -77,7 +146,7 @@ export default function AriaAssistant({ isOpen, onClose, onOpenReportModal, onTr
       } else if (actionType === 'REC') {
         onTriggerToast(`AI Recommendation: "${msg.recommendation}"`);
       } else if (actionType === 'ACTION') {
-        onTriggerToast(`SIMULATED AI ACTION DISPATCHED: "${msg.recommendation}"`);
+        onTriggerToast(`SIMULATED AI ACTION DISPATCHED: "${msg.recommendation || 'Action executed'}"`);
       }
     }
   };
@@ -86,7 +155,7 @@ export default function AriaAssistant({ isOpen, onClose, onOpenReportModal, onTr
     setMessages([
       {
         sender: 'aria',
-        text: 'Telemetry chat reset. AI CITY INTELLIGENCE is ready for your query.'
+        text: 'Chat history reset. SMART CITY AI ASSISTANT is ready for your query.'
       }
     ]);
   };
@@ -119,7 +188,7 @@ export default function AriaAssistant({ isOpen, onClose, onOpenReportModal, onTr
         onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
       >
         <Bot size={22} className="glow-text-cyan" />
-        <span>AI CITY INTELLIGENCE</span>
+        <span>SMART CITY AI ASSISTANT</span>
         <span className="pulse-dot" style={{ color: 'var(--color-neon-green)' }} />
       </button>
     );
@@ -134,12 +203,12 @@ export default function AriaAssistant({ isOpen, onClose, onOpenReportModal, onTr
         right: '24px',
         width: 'calc(100vw - 48px)',
         maxWidth: '430px',
-        height: '570px',
+        height: '580px',
         zIndex: 150,
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
+        boxShadow: '0 20px 50px rgba(0,0,0,0.85)',
         border: '1px solid var(--color-neon-cyan)'
       }}
     >
@@ -147,7 +216,7 @@ export default function AriaAssistant({ isOpen, onClose, onOpenReportModal, onTr
       <div
         style={{
           padding: '1rem',
-          background: 'rgba(3, 7, 18, 0.92)',
+          background: 'rgba(3, 7, 18, 0.94)',
           borderBottom: '1px solid rgba(0,243,255,0.2)',
           display: 'flex',
           alignItems: 'center',
@@ -172,9 +241,9 @@ export default function AriaAssistant({ isOpen, onClose, onOpenReportModal, onTr
           </div>
           <div>
             <div className="hud-font glow-text-cyan" style={{ fontSize: '0.95rem', fontWeight: 'bold' }}>
-              AI CITY INTELLIGENCE
+              SMART CITY AI ASSISTANT
             </div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--color-neon-green)' }}>● SIMULATED AI INSIGHTS</div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--color-neon-green)' }}>● ONLINE</div>
           </div>
         </div>
 
@@ -216,30 +285,29 @@ export default function AriaAssistant({ isOpen, onClose, onOpenReportModal, onTr
           >
             <div
               style={{
-                background: msg.sender === 'user' ? 'rgba(0,243,255,0.2)' : 'rgba(15,23,42,0.85)',
-                border: `1px solid ${msg.sender === 'user' ? 'var(--color-neon-cyan)' : 'rgba(255,255,255,0.1)'}`,
-                padding: '0.75rem 1rem',
+                background: msg.sender === 'user' ? 'rgba(0,243,255,0.2)' : 'rgba(15,23,42,0.88)',
+                border: `1px solid ${msg.sender === 'user' ? 'var(--color-neon-cyan)' : 'rgba(255,255,255,0.12)'}`,
+                padding: '0.85rem 1rem',
                 borderRadius: msg.sender === 'user' ? '14px 14px 2px 14px' : '14px 14px 14px 2px',
                 color: 'var(--color-text-main)',
-                fontSize: '0.92rem',
-                lineHeight: 1.5
+                fontSize: '0.9rem',
+                lineHeight: 1.5,
+                whiteSpace: 'pre-line'
               }}
             >
-              {msg.isAiInsight && (
-                <div style={{ marginBottom: '0.4rem' }}>
-                  <span className="hud-badge" style={{ fontSize: '0.62rem', padding: '0.15rem 0.4rem', borderColor: 'rgba(191,0,255,0.4)', color: 'var(--color-neon-purple)' }}>
-                    SIMULATED AI INSIGHT
-                  </span>
+              <div>{msg.text}</div>
+
+              {msg.analysis && (
+                <div style={{ marginTop: '0.5rem', fontSize: '0.82rem', color: 'var(--color-text-muted)' }}>
+                  <strong style={{ color: 'var(--color-neon-amber)' }}>ANALYSIS:</strong> {msg.analysis}
                 </div>
               )}
-              
-              <div>{msg.text}</div>
 
               {msg.recommendation && (
                 <div style={{ marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', fontSize: '0.82rem' }}>
                   <strong style={{ color: 'var(--color-neon-cyan)' }}>RECOMMENDATION:</strong> {msg.recommendation}
 
-                  {/* 3 Interactive Buttons */}
+                  {/* 3 Interactive Action Buttons */}
                   <div style={{ display: 'flex', gap: '0.3rem', marginTop: '0.5rem' }}>
                     <button
                       onClick={() => handleInsightAction('ANALYZE', msg)}
@@ -268,6 +336,12 @@ export default function AriaAssistant({ isOpen, onClose, onOpenReportModal, onTr
                   </div>
                 </div>
               )}
+
+              {msg.dataSource && (
+                <div style={{ marginTop: '0.5rem', fontSize: '0.68rem', color: 'var(--color-neon-cyan)', opacity: 0.8 }} className="hud-font">
+                  DATA SOURCE: {msg.dataSource}
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -275,7 +349,7 @@ export default function AriaAssistant({ isOpen, onClose, onOpenReportModal, onTr
         {isTyping && (
           <div style={{ alignSelf: 'flex-start' }}>
             <div className="glass-card" style={{ padding: '0.5rem 1rem', fontSize: '0.8rem', color: 'var(--color-neon-cyan)' }}>
-              AI CITY INTELLIGENCE is processing telemetry...
+              SMART CITY AI ASSISTANT is searching knowledge base...
             </div>
           </div>
         )}
@@ -283,16 +357,16 @@ export default function AriaAssistant({ isOpen, onClose, onOpenReportModal, onTr
         <div ref={chatBottomRef} />
       </div>
 
-      {/* Quick Suggestions Pills */}
-      <div style={{ padding: '0.5rem 1rem', background: 'rgba(3,7,18,0.6)', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '0.4rem', overflowX: 'auto' }}>
-        {quickPrompts.map((prompt) => (
+      {/* Suggested Questions Pills */}
+      <div style={{ padding: '0.5rem 1rem', background: 'rgba(3,7,18,0.7)', borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', gap: '0.4rem', overflowX: 'auto' }}>
+        {suggestedQuestions.map((prompt) => (
           <button
             key={prompt}
             onClick={() => handleSendMessage(prompt)}
             className="hud-font"
             style={{
               whiteSpace: 'nowrap',
-              fontSize: '0.7rem',
+              fontSize: '0.68rem',
               background: 'rgba(0,243,255,0.08)',
               border: '1px solid rgba(0,243,255,0.2)',
               color: 'var(--color-neon-cyan)',
@@ -324,7 +398,7 @@ export default function AriaAssistant({ isOpen, onClose, onOpenReportModal, onTr
           type="text"
           value={inputQuery}
           onChange={(e) => setInputQuery(e.target.value)}
-          placeholder="Ask AI Intelligence about traffic, energy..."
+          placeholder="Ask Smart City AI Assistant..."
           style={{
             flex: 1,
             background: 'rgba(15, 23, 42, 0.9)',

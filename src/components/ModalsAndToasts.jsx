@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { X, CheckCircle2, ShieldAlert, AlertTriangle, Send, PhoneCall } from 'lucide-react';
+import { X, CheckCircle2, ShieldAlert, AlertTriangle, Send, PhoneCall, AlertOctagon } from 'lucide-react';
 
 export default function ModalsAndToasts({
   activeMarker,
   onCloseMarker,
   emergencyOpen,
   onCloseEmergency,
+  onConfirmSendSos,
+  createdSosResult,
+  onCloseSosResult,
   reportModalOpen,
   onCloseReportModal,
   selectedTech,
@@ -20,22 +23,20 @@ export default function ModalsAndToasts({
       if (e.key === 'Escape') {
         if (activeMarker) onCloseMarker();
         if (emergencyOpen) onCloseEmergency();
+        if (createdSosResult) onCloseSosResult();
         if (reportModalOpen) onCloseReportModal();
         if (selectedTech) onCloseTech();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeMarker, emergencyOpen, reportModalOpen, selectedTech]);
+  }, [activeMarker, emergencyOpen, createdSosResult, reportModalOpen, selectedTech]);
 
   // Form State for Citizen Issue Report Modal
   const [issueCategory, setIssueCategory] = useState('Pothole / Road Repair');
   const [issueLocation, setIssueLocation] = useState('District 4 - Central Ave');
   const [issueDesc, setIssueDesc] = useState('');
   const [formError, setFormError] = useState('');
-
-  // SOS Emergency Admin Mobile SMS state
-  const [adminPhone, setAdminPhone] = useState('+1 (800) 938-2030');
 
   const handleReportSubmit = (e) => {
     e.preventDefault();
@@ -48,20 +49,6 @@ export default function ModalsAndToasts({
     setIssueDesc('');
     if (onTriggerToast) {
       onTriggerToast(`Issue report submitted successfully for ${issueLocation}. AI dispatch notified!`);
-    }
-  };
-
-  const handleSendAdminSms = () => {
-    onCloseEmergency();
-    if (onTriggerToast) {
-      onTriggerToast(`🚨 EMERGENCY SMS TRANSMITTED TO ADMIN MOBILE (${adminPhone}): SOS Alert in Zone 07!`);
-    }
-  };
-
-  const handleDispatchEmergency = () => {
-    onCloseEmergency();
-    if (onTriggerToast) {
-      onTriggerToast('Emergency response dispatched to Zone 07! Rapid units in route.');
     }
   };
 
@@ -117,78 +104,129 @@ export default function ModalsAndToasts({
         </div>
       )}
 
-      {/* EMERGENCY INCIDENT & ADMIN SMS DISPATCH MODAL */}
+      {/* 🚨 SOS CONFIRMATION MODAL (Prevents Accidental Triggers) */}
       {emergencyOpen && (
         <div className="modal-backdrop" style={backdropStyle}>
           <div className="glass-panel" style={{ ...modalContainerStyle, border: '1px solid var(--color-neon-red)' }}>
-            <div style={{ ...modalHeaderStyle, background: 'rgba(255,51,102,0.15)', borderBottom: '1px solid var(--color-neon-red)' }}>
+            <div style={{ ...modalHeaderStyle, background: 'rgba(255,51,102,0.18)', borderBottom: '1px solid var(--color-neon-red)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <ShieldAlert size={22} style={{ color: 'var(--color-neon-red)' }} />
-                <h3 className="hud-font" style={{ fontSize: '1.15rem', fontWeight: 'bold', color: 'var(--color-neon-red)' }}>
-                  ⚠ SOS EMERGENCY // ADMIN MOBILE ALERT
+                <AlertOctagon size={24} style={{ color: 'var(--color-neon-red)' }} />
+                <h3 className="hud-font" style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--color-neon-red)' }}>
+                  EMERGENCY SOS CONFIRMATION
                 </h3>
               </div>
               <button onClick={onCloseEmergency} style={closeBtnStyle}><X size={20} /></button>
             </div>
 
-            <div style={{ padding: '1.5rem' }}>
-              <p style={{ fontSize: '1rem', color: 'var(--color-text-main)', marginBottom: '1rem', lineHeight: 1.5 }}>
-                Trigger instant emergency dispatch or transmit a direct SMS alert broadcast to the City Operations Admin Mobile unit.
+            <div style={{ padding: '1.75rem', textAlign: 'center' }}>
+              <div
+                style={{
+                  width: '54px',
+                  height: '54px',
+                  borderRadius: '50%',
+                  background: 'rgba(255, 51, 102, 0.15)',
+                  border: '2px solid var(--color-neon-red)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 1.25rem',
+                  color: 'var(--color-neon-red)',
+                  boxShadow: '0 0 25px rgba(255, 51, 102, 0.4)'
+                }}
+              >
+                <ShieldAlert size={28} />
+              </div>
+
+              <h4 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--color-text-main)', marginBottom: '0.75rem' }}>
+                Are you sure you want to send an emergency alert to the City Command Center?
+              </h4>
+
+              <p style={{ fontSize: '0.92rem', color: 'var(--color-text-muted)', lineHeight: 1.5, marginBottom: '1.75rem' }}>
+                This action will log a critical SOS alert for <strong>Zone 04 — Demo Location</strong> and initiate emergency dispatch telemetry.
               </p>
 
-              {/* Admin Mobile Phone Input */}
-              <div style={{ marginBottom: '1.25rem' }}>
-                <label className="hud-font" style={{ display: 'block', fontSize: '0.78rem', color: 'var(--color-text-muted)', marginBottom: '0.4rem' }}>
-                  ADMIN MOBILE NUMBER FOR SMS DISPATCH:
-                </label>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <input
-                    type="text"
-                    value={adminPhone}
-                    onChange={(e) => setAdminPhone(e.target.value)}
-                    style={{ ...inputStyle, flex: 1 }}
-                  />
-                  <button
-                    onClick={handleSendAdminSms}
-                    className="btn-primary"
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(255,51,102,0.3), rgba(191,0,255,0.3))',
-                      borderColor: 'var(--color-neon-red)',
-                      fontSize: '0.8rem',
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    <PhoneCall size={14} />
-                    <span>SEND SMS →</span>
-                  </button>
-                </div>
-              </div>
-
-              <div className="glass-card" style={{ marginBottom: '1.25rem', border: '1px solid rgba(255,51,102,0.3)' }}>
-                <div className="hud-font" style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>RECOMMENDED DISPATCH PROTOCOL:</div>
-                <div className="hud-font glow-text-cyan" style={{ fontSize: '0.9rem', fontWeight: 'bold', marginTop: '0.2rem' }}>
-                  2 Rapid Medical Drones + 1 Autonomous Traffic Rerouter
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
-                <button onClick={onCloseEmergency} className="btn-secondary" style={{ flex: 1, justifyContent: 'center' }}>
-                  <span>DISMISS</span>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <button
+                  onClick={onCloseEmergency}
+                  className="btn-secondary"
+                  style={{ flex: 1, justifyContent: 'center' }}
+                >
+                  <span>CANCEL</span>
                 </button>
                 <button
-                  onClick={handleDispatchEmergency}
+                  onClick={() => {
+                    onCloseEmergency();
+                    onConfirmSendSos();
+                  }}
                   className="btn-primary"
                   style={{
-                    flex: 1,
+                    flex: 1.2,
                     justifyContent: 'center',
-                    background: 'linear-gradient(135deg, rgba(255,51,102,0.4), rgba(191,0,255,0.4))',
+                    background: 'linear-gradient(135deg, rgba(255,51,102,0.5), rgba(191,0,255,0.5))',
                     borderColor: 'var(--color-neon-red)',
-                    fontSize: '0.85rem'
+                    fontSize: '0.92rem'
                   }}
                 >
-                  <span>DISPATCH DRONES →</span>
+                  <ShieldAlert size={18} />
+                  <span>SEND SOS ALERT</span>
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SOS ALERT CREATED RESULT MODAL */}
+      {createdSosResult && (
+        <div className="modal-backdrop" style={backdropStyle}>
+          <div className="glass-panel" style={{ ...modalContainerStyle, border: '1px solid var(--color-neon-cyan)' }}>
+            <div style={modalHeaderStyle}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <CheckCircle2 size={22} className="glow-text-green" />
+                <h3 className="hud-font glow-text-green" style={{ fontSize: '1.15rem', fontWeight: 'bold' }}>
+                  ✓ SOS ALERT CREATED
+                </h3>
+              </div>
+              <button onClick={onCloseSosResult} style={closeBtnStyle}><X size={20} /></button>
+            </div>
+
+            <div style={{ padding: '1.5rem' }}>
+              <div className="glass-card" style={{ padding: '1.25rem', marginBottom: '1.25rem', borderLeft: '4px solid var(--color-neon-red)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                  <span className="hud-font glow-text-cyan" style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
+                    {createdSosResult.id}
+                  </span>
+                  <span className="hud-badge" style={{ borderColor: 'var(--color-neon-red)', color: 'var(--color-neon-red)' }}>
+                    ● {createdSosResult.priority}
+                  </span>
+                </div>
+
+                <div style={{ fontSize: '0.9rem', color: 'var(--color-text-main)', lineHeight: 1.6 }}>
+                  <div><strong>Type:</strong> {createdSosResult.type}</div>
+                  <div><strong>Location:</strong> {createdSosResult.zone}</div>
+                  <div><strong>Time:</strong> {createdSosResult.time}</div>
+                  <div><strong>Status:</strong> <span style={{ color: 'var(--color-neon-amber)' }}>{createdSosResult.status}</span></div>
+                </div>
+              </div>
+
+              {/* Status Badges & Demo Mode Callout */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-neon-green)', fontSize: '0.85rem' }}>
+                  <CheckCircle2 size={16} />
+                  <span>✓ CITY COMMAND CENTER NOTIFIED</span>
+                </div>
+                
+                {createdSosResult.demoMode && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-neon-amber)', fontSize: '0.85rem' }}>
+                    <AlertTriangle size={16} />
+                    <span>⚠ SMS DEMO MODE — ADMIN SMS SERVICE NOT CONFIGURED</span>
+                  </div>
+                )}
+              </div>
+
+              <button onClick={onCloseSosResult} className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+                <span>VIEW IN COMMAND CENTER →</span>
+              </button>
             </div>
           </div>
         </div>

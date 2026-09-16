@@ -30,6 +30,21 @@ export default function App() {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
 
+  // SOS Emergency Alerts State Array
+  const [sosAlerts, setSosAlerts] = useState([
+    {
+      id: 'SOS-2030-0042',
+      type: 'Emergency SOS',
+      zone: 'Zone 04 — Demo Location',
+      time: '10:32 AM',
+      priority: 'CRITICAL',
+      status: 'RESPONSE REQUIRED',
+      details: 'Immediate citizen assistance requested via SOS button.'
+    }
+  ]);
+
+  const [createdSosResult, setCreatedSosResult] = useState(null);
+
   // Modal States
   const [activeMarker, setActiveMarker] = useState(null);
   const [emergencyOpen, setEmergencyOpen] = useState(false);
@@ -52,6 +67,64 @@ export default function App() {
 
   const dismissToast = (id) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  // SOS Trigger & Serverless API Handler
+  const handleConfirmSendSos = async () => {
+    const now = new Date();
+    const formattedTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const newAlertId = `SOS-2030-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const newSosObj = {
+      id: newAlertId,
+      type: 'Emergency SOS',
+      zone: 'Zone 04 — Demo Location',
+      time: formattedTime,
+      priority: 'CRITICAL',
+      status: 'RESPONSE REQUIRED',
+      details: 'Immediate citizen assistance requested via SOS button.'
+    };
+
+    // Attempt Serverless Vercel API Call
+    let demoMode = true;
+    try {
+      const response = await fetch('/api/send-sos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newSosObj)
+      });
+      const data = await response.json();
+      if (data && data.demoMode !== undefined) {
+        demoMode = data.demoMode;
+      }
+    } catch (err) {
+      demoMode = true;
+    }
+
+    // Add to SOS Alerts State
+    setSosAlerts((prev) => [newSosObj, ...prev]);
+
+    // Set Result Modal Display
+    setCreatedSosResult({ ...newSosObj, demoMode });
+
+    // Trigger Toasts
+    triggerToast(`✓ SOS ALERT CREATED (${newAlertId}) logged to Zone 04.`);
+    if (demoMode) {
+      triggerToast(`⚠ SMS DEMO MODE — ADMIN SMS SERVICE NOT CONFIGURED`);
+    }
+  };
+
+  // Interactive SOS Status Transitions (RESPONSE REQUIRED -> ACKNOWLEDGED -> RESPONDING -> RESOLVED)
+  const handleUpdateSosStatus = (alertId, newStatus) => {
+    setSosAlerts((prev) =>
+      prev.map((alert) => {
+        if (alert.id === alertId) {
+          return { ...alert, status: newStatus };
+        }
+        return alert;
+      })
+    );
+    triggerToast(`Alert ${alertId} status updated to: ${newStatus}`);
   };
 
   return (
@@ -77,8 +150,12 @@ export default function App() {
           onOpenDashboard={() => triggerToast("Navigated to City Command Center Dashboard...")}
         />
 
-        {/* 2. City Command Center (Main Centerpiece Dashboard) */}
-        <CommandDashboard onTriggerToast={triggerToast} />
+        {/* 2. City Command Center (Main Centerpiece Dashboard with 🚨 ACTIVE EMERGENCY ALERTS Panel) */}
+        <CommandDashboard
+          sosAlerts={sosAlerts}
+          onUpdateSosStatus={handleUpdateSosStatus}
+          onTriggerToast={triggerToast}
+        />
 
         {/* 3. Interactive City Map & Digital Twin Mirror */}
         <DigitalTwin onTriggerToast={triggerToast} />
@@ -112,12 +189,13 @@ export default function App() {
         <Roadmap2030 />
       </main>
 
-      {/* ARIA AI Floating Assistant Drawer */}
+      {/* ARIA / SMART CITY AI ASSISTANT Drawer (State-Grounded) */}
       <AriaAssistant
         isOpen={ariaOpen}
         onClose={() => setAriaOpen(!ariaOpen)}
         onOpenReportModal={() => setReportModalOpen(true)}
         onTriggerToast={triggerToast}
+        sosAlerts={sosAlerts}
       />
 
       {/* Global Modals & Toast Manager */}
@@ -126,6 +204,9 @@ export default function App() {
         onCloseMarker={() => setActiveMarker(null)}
         emergencyOpen={emergencyOpen}
         onCloseEmergency={() => setEmergencyOpen(false)}
+        onConfirmSendSos={handleConfirmSendSos}
+        createdSosResult={createdSosResult}
+        onCloseSosResult={() => setCreatedSosResult(null)}
         reportModalOpen={reportModalOpen}
         onCloseReportModal={() => setReportModalOpen(false)}
         selectedTech={selectedTech}
